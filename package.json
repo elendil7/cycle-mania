@@ -1,0 +1,25 @@
+{
+  "name": "cycle-mania",
+  "version": "1.0.0",
+  "description": "A custom bot built for the Cycle Mania community, to communicate with Strava and do other cool things.",
+  "main": "./src/Index.ts",
+  "scripts": {
+    "nodemon": "nodemon ./src/Index.ts --watch ./src",
+    "pm2:start": "pm2 start ./src/Index.ts --name cycle-mania",
+    "pm2-stop": "pm2 stop cycle-mania"
+  },
+  "keywords": [],
+  "author": "Vitalijs Strelcuks",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "prettier": "^3.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "discord.js": "^14.11.0",
+    "dotenv": "^16.3.1",
+    "pm2": "^5.3.0"
+  },
+  "prettier": "./.prettierrc.yaml"
+}
