@@ -17,7 +17,13 @@ export default async function CommandHandler(
     .get(interaction.commandName.toLowerCase());
 
   // if the command doesn't exist, return
-  if (!command) return;
+  if (!command) {
+    await interaction.reply({
+      content: "That command doesn't exist!",
+      ephemeral: false,
+    });
+    return;
+  }
 
   // try to execute the command
   try {
