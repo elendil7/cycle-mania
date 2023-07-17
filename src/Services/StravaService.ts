@@ -2,9 +2,10 @@ import {
   STRAVA_CLIENT_ID,
   STRAVA_CLIENT_SECRET,
 } from "../Discord/Utils/exportedEnvs";
+import { config_STRAVA } from "../../config";
 
 export default class StavaService {
-  private BASE_URL = "https://www.strava.com/api/v3";
+  private BASE_URL = config_STRAVA.base_URL;
   private CLIENT_ID = STRAVA_CLIENT_ID;
   private CLIENT_SECRET = STRAVA_CLIENT_SECRET;
 

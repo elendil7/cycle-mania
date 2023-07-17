@@ -1,5 +1,5 @@
 import { Client, Collection, Events } from "discord.js";
-import { config } from "../../../config";
+import { config_DISCORDBOT } from "../../../config";
 import { resolve } from "path";
 import { readdirSync } from "fs";
 import { DISCORD_BOT_TOKEN } from "../Utils/exportedEnvs";
@@ -17,7 +17,7 @@ export default class DiscordBot extends Client {
 
   constructor(args: any) {
     super(args);
-    this.config = config;
+    this.config = config_DISCORDBOT;
     this.events = new Collection<string, Events>();
     this.commandCategories = new Collection<string, string[]>();
     this.commands = new Collection<string, Command>();
