@@ -3,7 +3,7 @@ import { config_DISCORDBOT } from "../../../config";
 import { resolve } from "path";
 import { readdirSync } from "fs";
 import { DISCORD_BOT_TOKEN } from "../Utils/exportedEnvs";
-import Command from "./Command";
+import SlashCommand from "./Command";
 import registerSlashCommands from "../Utils/registerSlashCommands";
 import IEventsCollection from "../Types/IEventsCollection";
 import ICommandCategoriesCollection from "../Types/ICommandCategoriesCollection";
@@ -20,7 +20,7 @@ export default class DiscordBot extends Client {
     this.config = config_DISCORDBOT;
     this.events = new Collection<string, Events>();
     this.commandCategories = new Collection<string, string[]>();
-    this.commands = new Collection<string, Command>();
+    this.commands = new Collection<string, SlashCommand>();
   }
 
   // getters
@@ -36,8 +36,12 @@ export default class DiscordBot extends Client {
     return this.commandCategories;
   }
 
-  public getCommands(): Collection<string, Command> {
+  public getCommands(): Collection<string, SlashCommand> {
     return this.commands;
+  }
+
+  public getCommand(commandName: string): SlashCommand | undefined {
+    return this.commands.get(commandName);
   }
 
   public async start() {
@@ -50,6 +54,17 @@ export default class DiscordBot extends Client {
     }
   }
 
+  // setters
+  public setCommand(commandName: string, command: SlashCommand): void {
+    this.commands.set(commandName, command);
+  }
+
+  // removers
+  public removeCommand(commandName: string): void {
+    this.commands.delete(commandName);
+  }
+
+  // methods
   public async loadCommands(): Promise<void> {
     try {
       // get Command folder path
@@ -96,17 +111,25 @@ export default class DiscordBot extends Client {
           // if no file at that path, skip to next iteration
           if (!commandName) continue;
 
-          commandName = commandName.split(".ts")[0].toLowerCase();
+          commandName = commandName.split(".ts")[0];
 
           // import the command file
-          const command = (
+          let command = (
             await import(
               `../Commands/${commandCategoryName}/${commandFolderName}/${commandName}`
             )
           ).default;
 
+          command.info = {
+            commandName: commandName,
+            commandCategory: commandCategoryName,
+          };
+
+          command.info.commandName = commandName;
+          command.info.commandCategory = commandCategoryName;
+
           // add the command to the collection of commands, to be accessed anytime
-          this.commands.set(commandName, command);
+          this.commands.set(commandName.toLowerCase(), command);
         }
 
         // add the command names to the collection of command categories
