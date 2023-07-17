@@ -1,8 +1,9 @@
 import { CommandInteraction, SlashCommandBuilder } from "discord.js";
 import DiscordBot from "../../../Structures/DiscordBot";
-import { HelpEmbed } from "./HelpEmbed";
+import { HelpEmbed } from "./HelpEmbeds";
+import SlashCommand from "../../../Structures/Command";
 
-const Help = {
+const Help: SlashCommand = {
   data: new SlashCommandBuilder()
     .setName("help")
     .setDescription("Displays a list of commands and their descriptions.")
