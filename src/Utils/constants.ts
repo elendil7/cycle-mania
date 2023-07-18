@@ -112,6 +112,7 @@ export enum Symbols {
   ARROW_DOWN = "⬇️",
   ARROW_LEFT = "⬅️",
   ARROW_RIGHT = "➡️",
+  HOURGLASS = "⌛",
 }
 
 // Time values

@@ -1,5 +1,5 @@
-import DiscordBot from "../Structures/DiscordBot";
 import { Symbols } from "../../Utils/constants";
+import DiscordBot from "../Structures/DiscordBot";
 import { Events } from "discord.js";
 
 export default {

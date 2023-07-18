@@ -12,3 +12,4 @@ export const DISCORD_GUILD_IDS = getEnv("DISCORD_GUILD_IDS")
 // * For Strava API
 export const STRAVA_CLIENT_ID = getEnv("STRAVA_CLIENT_ID");
 export const STRAVA_CLIENT_SECRET = getEnv("STRAVA_CLIENT_SECRET");
+export const STRAVA_ACCESS_TOKEN = getEnv("STRAVA_ACCESS_TOKEN");
