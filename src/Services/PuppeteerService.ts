@@ -23,6 +23,9 @@ export default class PuppeteerService {
       }),
     );
     puppeteer.use(StealthPlugin({}));
+
+    // create paths for puppeteer cache (if do not exist /system/data/puppeteer)
+    this.createPaths();
   }
 
   public async launchBrowser(serviceName: string) {
@@ -156,7 +159,17 @@ export default class PuppeteerService {
     }
   }
 
-  public async purgeCache() {
+  public createPaths() {
+    // get path of the puppeteer cache folder, 1 level above the service cache folder
+    const path = join(__dirname, "../../system/cache/puppeteer");
+
+    // recursively create the path if it does not exist
+    if (!existsSync(path)) {
+      mkdirSync(path, { recursive: true });
+    }
+  }
+
+  public purgeCache() {
     // read paths of every dir in the ../system/cache/puppeteer folder
     const dirs = readdirSync(join(__dirname, "../../system/cache/puppeteer"));
 

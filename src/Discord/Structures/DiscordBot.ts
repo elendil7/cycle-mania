@@ -2,12 +2,12 @@ import { Client, Collection, Events } from "discord.js";
 import { config_DISCORDBOT } from "../../../config";
 import { resolve } from "path";
 import { readdirSync } from "fs";
-import { DISCORD_BOT_TOKEN } from "../Utils/exportedEnvs";
 import SlashCommand from "./Command";
 import registerSlashCommands from "../Utils/registerSlashCommands";
 import IEventsCollection from "../Types/IEventsCollection";
 import ICommandCategoriesCollection from "../Types/ICommandCategoriesCollection";
 import ICommandsCollection from "../Types/ICommandsCollection";
+import getEnv from "../../Utils/getEnv";
 
 export default class DiscordBot extends Client {
   private config: any;
@@ -47,7 +47,7 @@ export default class DiscordBot extends Client {
   public async start() {
     try {
       // login to Discord using bot token
-      await super.login(DISCORD_BOT_TOKEN);
+      await super.login(getEnv("DISCORD_BOT_TOKEN"));
       console.log("Logged in to Discord.");
     } catch (e) {
       console.log(e);

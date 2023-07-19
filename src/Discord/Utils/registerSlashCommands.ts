@@ -1,11 +1,8 @@
 import Command from "../Structures/Command";
 import { Collection, REST, Routes } from "discord.js";
-import {
-  DISCORD_BOT_ID,
-  DISCORD_BOT_TOKEN,
-  DISCORD_GUILD_IDS,
-} from "./exportedEnvs";
 import { Symbols } from "../../Utils/constants";
+import getEnv from "../../Utils/getEnv";
+import { config_DISCORDBOT } from "../../../config";
 
 export default async function registerSlashCommands(
   commands: Collection<string, Command>,
@@ -24,10 +21,10 @@ export default async function registerSlashCommands(
   });
 
   // Construct and prepare an instance of the REST module
-  const rest = new REST().setToken(DISCORD_BOT_TOKEN);
+  const rest = new REST().setToken(getEnv("DISCORD_BOT_TOKEN"));
 
   let totalCommands = commandsInJSON.length;
-  let totalGuilds = DISCORD_GUILD_IDS.length;
+  let totalGuilds = config_DISCORDBOT.guildIDs.length;
 
   // and deploy your commands!
   try {
@@ -35,13 +32,16 @@ export default async function registerSlashCommands(
       `Started refreshing ${totalCommands} application (/) commands in ${totalGuilds} guilds.`,
     );
 
-    for (let i = 0; i < DISCORD_GUILD_IDS.length; ++i) {
-      const guildID = DISCORD_GUILD_IDS[i];
+    for (let i = 0; i < totalGuilds; ++i) {
+      const guildID = config_DISCORDBOT.guildIDs[i];
 
       // The put method is used to fully refresh all commands in the guild with the current set
-      await rest.put(Routes.applicationGuildCommands(DISCORD_BOT_ID, guildID), {
-        body: commandsInJSON,
-      });
+      await rest.put(
+        Routes.applicationGuildCommands(getEnv("DISCORD_BOT_ID"), guildID),
+        {
+          body: commandsInJSON,
+        },
+      );
     }
 
     console.log(

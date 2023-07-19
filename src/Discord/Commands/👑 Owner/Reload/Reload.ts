@@ -5,9 +5,9 @@ import {
   InvalidCommandEmbed,
   NotOwnerEmbed,
 } from "./ReloadEmbeds";
-import { DISCORD_BOT_OWNER_ID } from "../../../Utils/exportedEnvs";
 import SlashCommand from "../../../Structures/Command";
 import { resolve } from "path";
+import getEnv from "../../../../Utils/getEnv";
 
 const Reload: SlashCommand = {
   data: new SlashCommandBuilder()
@@ -22,7 +22,7 @@ const Reload: SlashCommand = {
     ),
   async execute(client: DiscordBot, interaction: CommandInteraction) {
     // check if user is owner. If not, they don't have the authority to run the command lol.
-    if (interaction.user.id !== DISCORD_BOT_OWNER_ID) {
+    if (interaction.user.id !== getEnv("DISCORD_BOT_OWNER_ID")) {
       await interaction.reply({
         embeds: [await NotOwnerEmbed()],
       });
