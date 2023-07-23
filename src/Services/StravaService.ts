@@ -1,51 +1,103 @@
-import {
-  STRAVA_ACCESS_TOKEN,
-  STRAVA_CLIENT_ID,
-  STRAVA_CLIENT_SECRET,
-} from "../Discord/Utils/exportedEnvs";
 import { config_STRAVA } from "../../config";
 import axios from "axios";
-import SummaryClub from "../API/Strava/v3/models/SummaryClub";
-// import { default as strava, Strava } from "strava-v3";
-const strava = require("strava-v3");
-import { Strava } from "strava-v3";
 import { Symbols } from "../Utils/constants";
 import { puppeteerService } from "../Index";
+import getEnv from "../Utils/getEnv";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { dirname, resolve } from "path";
+import RefreshTokenDecorator from "../API/Strava/v3/decorators/RefreshTokenDecorator";
+import Club from "../API/Strava/v3/models/Club";
+import AuthenticationConfig from "../API/Strava/v3/models/Custom/AuthenticationConfig";
 
 export default class StravaService {
-  private client: Strava;
-  private config: typeof config_STRAVA;
-  private CLIENT_ID: string;
-  private CLIENT_SECRET: string;
-  private ACCESS_TOKEN: string;
+  private readonly _configStrava: typeof config_STRAVA; // private field (immutable) to store the most recent config
+  private readonly _configAuth: AuthenticationConfig; // private field (immutable) to store the most recent strava config
+
+  private _accessToken: string; // private field to store the most recent access token
 
   constructor() {
-    this.client = strava;
-    this.config = config_STRAVA;
-    this.CLIENT_ID = STRAVA_CLIENT_ID;
-    this.CLIENT_SECRET = STRAVA_CLIENT_SECRET;
-    this.ACCESS_TOKEN = STRAVA_ACCESS_TOKEN;
+    this._configStrava = config_STRAVA;
+    this._configAuth = {
+      client_id: getEnv("STRAVA_CLIENT_ID"),
+      client_secret: getEnv("STRAVA_CLIENT_SECRET"),
+    };
+    // mandatory setting of access token (useless, as its set in the init function)
+    this._accessToken = "";
+
+    // initialize the service
     this.init();
   }
 
-  private async init() {
-    // make puppeteer browser
-    // await puppeteerService.launchBrowser(this.constructor.name);
+  // getter for config_STRAVA (immutable, to be run from the RefreshToken function
+  public get stravaConfig() {
+    return this._configStrava;
+  }
 
+  // getter for private field (current stravaConfig), to be run from the RefreshToken function
+  public get authConfig() {
+    return this._configAuth;
+  }
+
+  // getters for access token
+  public get accessToken() {
+    return this._accessToken;
+  }
+
+  // setter for access token
+  public set accessToken(token: string) {
+    this._accessToken = token;
+  }
+
+  private init() {
+    // * load strava config
     console.log(`${Symbols.HOURGLASS} Loading Strava config...`);
-    this.client.config({
-      client_id: this.CLIENT_ID,
-      client_secret: this.CLIENT_SECRET,
-      access_token: this.ACCESS_TOKEN,
-      redirect_uri: this.config.redirect_URL,
-    });
+
+    // get the storage path from the strava config
+    const storagePath = this.stravaConfig.path.storage;
+
+    // Check if the storage.json file exists
+    const fileExists = existsSync(storagePath);
+
+    // If the file doesn't exist, create the directory structure and the file
+    if (!fileExists) {
+      // Get the directory path from the storage path
+      const directoryPath = dirname(storagePath);
+
+      // Create the directory structure recursively
+      mkdirSync(directoryPath, { recursive: true });
+
+      // Create the storage.json file, with "0" as the expires_at field, and the access and refresh tokens from the .env file
+      // (these fields will be updated later accordingly when the access token needs to be refreshed)
+      writeFileSync(
+        storagePath,
+        JSON.stringify({
+          expires_at: 0,
+          access_token: getEnv("STRAVA_ACCESS_TOKEN"),
+          refresh_token: getEnv("STRAVA_REFRESH_TOKEN"),
+        }),
+        "utf8",
+      );
+    }
+
+    // load access token into the strava service's memory
+    this.accessToken = getEnv("STRAVA_ACCESS_TOKEN");
+
     console.log(`${Symbols.CHECKMARK} Loaded!`);
 
+    // TODO - make puppeteer browser
+    // make puppeteer browser
+    // await puppeteerService.launchBrowser(this.constructor.name);
+  }
+
+  @RefreshTokenDecorator // decorator to refresh token before calling the method
+  public async attemptPing() {
+    // * try pinging strava with the current access token
     try {
       console.log(`${Symbols.HOURGLASS} Pinging strava...`);
-      const response = await axios.get(`${this.config.base_URL}/athlete`, {
+      const response = await axios.get(`/athlete`, {
+        baseURL: this.stravaConfig.url.base_URL,
         headers: {
-          Authorization: `Bearer ${this.ACCESS_TOKEN}`,
+          Authorization: `Bearer ${this.accessToken}`,
         },
       });
       if (response.status === 200) {
@@ -62,18 +114,21 @@ export default class StravaService {
     }
   }
 
+  @RefreshTokenDecorator
   public getActivities() {
     return new Promise((resolve, reject) => {
       resolve([]);
     });
   }
 
+  @RefreshTokenDecorator
   public getAthlete() {
     return new Promise((resolve, reject) => {
       resolve([]);
     });
   }
 
+  @RefreshTokenDecorator
   public getAthleteStats() {
     return new Promise((resolve, reject) => {
       resolve([]);
@@ -81,35 +136,51 @@ export default class StravaService {
   }
 
   // club
-  public async getClub(clubID: string) {
+  @RefreshTokenDecorator // decorator to refresh token before calling the method
+  public async getClub(clubID: string): Promise<Club> {
     try {
-      return (await this.client.clubs.get({
-        id: clubID,
-        access_token: this.ACCESS_TOKEN,
-      })) as SummaryClub;
+      // get club at GET /clubs/{id} using axios
+      const { data, status } = await axios.get(`/clubs/${clubID}`, {
+        baseURL: this.stravaConfig.url.base_URL,
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+        },
+      });
+
+      if (status === 200) {
+        return data as Club;
+      } else {
+        throw new Error(
+          `Error getting club with ID ${clubID}. Status code: ${status}`,
+        );
+      }
     } catch (e) {
-      console.error(e);
+      throw e;
     }
   }
 
+  @RefreshTokenDecorator
   public getClubActivities() {
     return new Promise((resolve, reject) => {
       resolve([]);
     });
   }
 
+  @RefreshTokenDecorator
   public getClubAdmins() {
     return new Promise((resolve, reject) => {
       resolve([]);
     });
   }
 
+  @RefreshTokenDecorator
   public getClubAllMembers() {
     return new Promise((resolve, reject) => {
       resolve([]);
     });
   }
 
+  @RefreshTokenDecorator
   public getClubAnnouncements() {
     return new Promise((resolve, reject) => {
       resolve([]);
@@ -117,6 +188,7 @@ export default class StravaService {
   }
 
   // leaderboard
+  @RefreshTokenDecorator
   public async getClubGroupLeaderboard(clubID: string) {
     try {
     } catch (e) {
@@ -124,6 +196,7 @@ export default class StravaService {
     }
   }
 
+  @RefreshTokenDecorator
   public getClubSegmentLeaderboard() {
     return new Promise((resolve, reject) => {
       resolve([]);
