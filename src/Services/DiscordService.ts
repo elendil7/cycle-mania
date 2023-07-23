@@ -3,13 +3,11 @@ import { GatewayIntentBits } from "discord.js";
 import DiscordBot from "../Discord/Structures/DiscordBot";
 
 export default class DiscordService {
-  constructor() {
-    this.startBot();
-  }
+  private client: DiscordBot;
 
-  private async startBot() {
+  constructor() {
     // Create a new client instance
-    const client = new DiscordBot({
+    this.client = new DiscordBot({
       intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMembers,
@@ -20,10 +18,12 @@ export default class DiscordService {
         GatewayIntentBits.GuildMessageTyping,
       ],
     });
+  }
 
-    await client.start();
-    await client.loadCommands();
-    await client.registerCommands();
-    await client.loadEvents();
+  public async startBot() {
+    await this.client.loadCommands();
+    await this.client.registerCommands();
+    await this.client.loadEvents();
+    await this.client.start();
   }
 }
