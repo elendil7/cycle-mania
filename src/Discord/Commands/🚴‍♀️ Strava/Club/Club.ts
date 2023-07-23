@@ -4,7 +4,6 @@ import SlashCommand from "../../../Structures/Command";
 import { config_STRAVA } from "../../../../../config";
 import { stravaService } from "../../../../Index";
 import { ClubInfoEmbed, InvalidClubEmbed } from "./ClubEmbeds";
-import { AxiosError } from "axios";
 
 const Club: SlashCommand = {
   data: new SlashCommandBuilder()
@@ -14,7 +13,9 @@ const Club: SlashCommand = {
       option
         .setName("clubid")
         .setDescription("The ID of the club to get info about.")
-        .setRequired(false),
+        .setRequired(false)
+        .setMinValue(1)
+        .setMaxValue(99999999999999),
     ),
   async execute(client: DiscordBot, interaction: CommandInteraction) {
     const clubID = String(

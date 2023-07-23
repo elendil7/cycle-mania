@@ -90,7 +90,7 @@ export default class StravaService {
       this.accessToken = storage.access_token;
     }
 
-    console.log(`${Symbols.CHECKMARK} Loaded!`);
+    console.log(`${Symbols.SUCCESS} Loaded!`);
 
     // TODO - make puppeteer browser
     // make puppeteer browser
@@ -109,7 +109,7 @@ export default class StravaService {
         },
       });
       if (response.status === 200) {
-        console.log(`${Symbols.CHECKMARK} Ping successful!`);
+        console.log(`${Symbols.SUCCESS} Ping successful!`);
       } else {
         console.error(
           `${Symbols.FAILURE} Failed to connect to the Strava API. Check refresh token.`,
