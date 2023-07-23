@@ -8,6 +8,7 @@ import { dirname, resolve } from "path";
 import RefreshTokenDecorator from "../API/Strava/v3/decorators/RefreshTokenDecorator";
 import Club from "../API/Strava/v3/models/Club";
 import AuthenticationConfig from "../API/Strava/v3/models/Custom/AuthenticationConfig";
+import StorageSchema from "../API/Strava/v3/models/Custom/StorageSchema";
 
 export default class StravaService {
   private readonly _configStrava: typeof config_STRAVA; // private field (immutable) to store the most recent config
@@ -77,10 +78,17 @@ export default class StravaService {
         }),
         "utf8",
       );
-    }
 
-    // load access token into the strava service's memory
-    this.accessToken = getEnv("STRAVA_ACCESS_TOKEN");
+      // load access token into the strava service's memory
+      this.accessToken = getEnv("STRAVA_ACCESS_TOKEN");
+    }
+    // if file exists, read the file and load the access token into the strava service's memory
+    else {
+      const storage: StorageSchema = JSON.parse(
+        readFileSync(storagePath, "utf8"),
+      );
+      this.accessToken = storage.access_token;
+    }
 
     console.log(`${Symbols.CHECKMARK} Loaded!`);
 
