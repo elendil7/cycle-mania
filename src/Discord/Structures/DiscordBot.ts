@@ -110,12 +110,16 @@ export default class DiscordBot extends Client {
               commandFolderName,
             ),
             "utf-8",
-          ).filter((file) => file === `${commandFolderName}.ts`)[0];
+          ).filter(
+            (file) =>
+              file === `${commandFolderName}.ts` ||
+              file === `${commandFolderName}.js`,
+          )[0];
 
           // if no file at that path, skip to next iteration
           if (!commandName) continue;
 
-          commandName = commandName.split(".ts")[0];
+          commandName = commandName.split(".")[0];
 
           // import the command file
           let command = (
@@ -165,8 +169,13 @@ export default class DiscordBot extends Client {
 
       // get all file names of events
       const eventNames = readdirSync(path, "utf-8")
-        .filter((file) => file.endsWith(".ts"))
-        .map((file) => file.split(".ts")[0]);
+        .filter(
+          (file) =>
+            // compensate for .ts and .js files (dev VS prod)
+            (file.endsWith(".ts") || file.endsWith(".js")) &&
+            !file.endsWith(".d.ts"),
+        )
+        .map((file) => file.split(".")[0]);
 
       // if event file names were fetched
       if (eventNames) {
