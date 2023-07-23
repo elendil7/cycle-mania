@@ -6,11 +6,8 @@ export default interface Club {
   profile: string;
   cover_photo: string;
   cover_photo_small: string;
-  activity_types: string[];
-  activity_types_icon: string;
-  dimensions: string[];
   sport_type: string;
-  localized_sport_type: string;
+  activity_types: string[];
   city: string;
   state: string;
   country: string;
@@ -24,6 +21,7 @@ export default interface Club {
   owner: boolean;
   description: string;
   club_type: string;
+  post_count: number;
+  owner_id: number;
   following_count: number;
-  website: string;
 }
