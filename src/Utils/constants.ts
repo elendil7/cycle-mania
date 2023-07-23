@@ -165,6 +165,10 @@ export const Status_Codes = {
     "Service Unavailable -- We're temporarily offline for maintenance. Please try again later.",
 };
 
+// Misc constants
+// fancy linebreak
+export const LineBreak = "--------------------------------------------------";
+
 // Export every emoji possible
 export const Emojis = {
   // * Misc
