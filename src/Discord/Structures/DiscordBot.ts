@@ -8,6 +8,7 @@ import IEventsCollection from "../Types/IEventsCollection";
 import ICommandCategoriesCollection from "../Types/ICommandCategoriesCollection";
 import ICommandsCollection from "../Types/ICommandsCollection";
 import getEnv from "../../Utils/getEnv";
+import { Symbols } from "../../Utils/constants";
 
 export default class DiscordBot extends Client {
   private config: any;
@@ -46,9 +47,10 @@ export default class DiscordBot extends Client {
 
   public async start() {
     try {
+      console.log(`${Symbols.HOURGLASS} Logging in to Discord...`);
       // login to Discord using bot token
       await super.login(getEnv("DISCORD_BOT_TOKEN"));
-      console.log("Logged in to Discord.");
+      console.log(`${Symbols.SUCCESS} Logged in to Discord.`);
     } catch (e) {
       console.log(e);
     }
@@ -66,6 +68,8 @@ export default class DiscordBot extends Client {
 
   // methods
   public async loadCommands(): Promise<void> {
+    console.log(`${Symbols.HOURGLASS} Loading commands...`);
+
     try {
       // get Command folder path
       const commandCategoriesPath = resolve(__dirname, "..", "Commands");
@@ -135,6 +139,8 @@ export default class DiscordBot extends Client {
         // add the command names to the collection of command categories
         this.commandCategories.set(commandCategoryName, commandNames);
       }
+
+      console.log(`${Symbols.SUCCESS} Commands loaded.`);
     } catch (e) {
       console.log(e);
     }
@@ -152,6 +158,8 @@ export default class DiscordBot extends Client {
   }
 
   public async loadEvents() {
+    console.log(`${Symbols.HOURGLASS} Loading events...`);
+
     try {
       const path = resolve(__dirname, "..", "Events");
 
@@ -180,10 +188,10 @@ export default class DiscordBot extends Client {
         // log all events
         // console.log(this.events);
 
-        console.log("Events loaded.");
+        console.log(`${Symbols.SUCCESS} Events loaded.`);
       } else {
         // if no events were fetched, send error message
-        console.log("No events found.");
+        console.log(`${Symbols.ERROR} No events found. Debug it.`);
       }
     } catch (e) {
       console.log(e);

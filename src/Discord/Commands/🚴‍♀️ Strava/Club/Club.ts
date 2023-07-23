@@ -4,6 +4,7 @@ import SlashCommand from "../../../Structures/Command";
 import { config_STRAVA } from "../../../../../config";
 import { stravaService } from "../../../../Index";
 import { ClubInfoEmbed, InvalidClubEmbed } from "./ClubEmbeds";
+import { AxiosError } from "axios";
 
 const Club: SlashCommand = {
   data: new SlashCommandBuilder()
@@ -20,19 +21,23 @@ const Club: SlashCommand = {
       interaction.options.get("clubid", false)?.value || config_STRAVA.clubID,
     );
 
-    const club = await stravaService.getClub(clubID);
+    try {
+      // get club info
+      const club = await stravaService.getClub(clubID);
 
-    if (!club) {
+      // reply with club stats (if no error is thrown in the external getClub method), and if the club exists
+      await interaction.reply({
+        embeds: [await ClubInfoEmbed(club)],
+      });
+    } catch (e: any) {
+      // if error is 404, don't throw an error, just reply with an embed
+      if (e.response.status !== 404) return console.error(e);
+
       await interaction.reply({
         embeds: [await InvalidClubEmbed(clubID)],
       });
       return;
     }
-
-    // reply with club stats
-    await interaction.reply({
-      embeds: [await ClubInfoEmbed(club)],
-    });
   },
 };
 

@@ -29,7 +29,7 @@ export default async function registerSlashCommands(
   // and deploy your commands!
   try {
     console.log(
-      `Started refreshing ${totalCommands} application (/) commands in ${totalGuilds} guilds.`,
+      `${Symbols.HOURGLASS} Started refreshing ${totalCommands} application (/) commands in ${totalGuilds} guilds.`,
     );
 
     for (let i = 0; i < totalGuilds; ++i) {
@@ -45,7 +45,7 @@ export default async function registerSlashCommands(
     }
 
     console.log(
-      `Successfully reloaded ${totalCommands} application (/) commands in ${totalGuilds} guilds.`,
+      `${Symbols.SUCCESS} Successfully reloaded ${totalCommands} application (/) commands in ${totalGuilds} guilds.`,
     );
   } catch (error) {
     // And of course, make sure you catch and log any errors!

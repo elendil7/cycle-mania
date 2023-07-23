@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import { Symbols } from "../../../../Utils/constants";
-import SummaryClub from "../../../../API/Strava/v3/models/SummaryClub";
+import Club from "../../../../API/Strava/v3/models/Club";
 
 export async function InvalidClubEmbed(clubID: string) {
   let embed = new EmbedBuilder()
@@ -10,7 +10,7 @@ export async function InvalidClubEmbed(clubID: string) {
   return embed;
 }
 
-export async function ClubInfoEmbed(club: SummaryClub) {
+export async function ClubInfoEmbed(club: Club) {
   let embed = new EmbedBuilder()
     .setTitle(`${Symbols.STAR} ${club.name} club info ${Symbols.STAR}`)
     .setDescription(`Here's some info about the ${club.name} strava club.`)
