@@ -38,3 +38,11 @@ export const config_STRAVA = {
     storage: resolve(__dirname, "./system/data/storage.json"),
   },
 };
+
+export const config_PUPPETEER = {
+  // paths
+  path: {
+    // puppeteer cache dir path
+    cache: resolve(__dirname, "./system/cache/puppeteer"),
+  },
+};

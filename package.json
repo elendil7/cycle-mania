@@ -5,10 +5,12 @@
   "main": "./src/Index.ts",
   "scripts": {
     "nodemon": "nodemon ./src/Index.ts --watch ./src --ignore ./src/Discord/Commands",
-    "pm2:start": "pm2 start ./src/Index.ts --name cycle-mania",
-    "pm2-stop": "pm2 stop cycle-mania",
     "build": "tsc",
-    "start": "node ./dist/src/Index.js"
+    "start": "node ./dist/src/Index.js",
+    "pm2:start": "pm2 start ./dist/src/Index.js --name cycle-mania",
+    "pm2:stop": "pm2 stop cycle-mania",
+    "pm2:restart": "pm2 restart cycle-mania --update-env",
+    "pm2:log": "pm2 log --lines 200"
   },
   "keywords": [],
   "author": "Vitalijs Strelcuks",
@@ -24,6 +26,7 @@
     "axios": "^1.4.0",
     "discord.js": "^14.11.0",
     "dotenv": "^16.3.1",
+    "node-html-parser": "^6.1.5",
     "pm2": "^5.3.0",
     "puppeteer": "^20.8.2",
     "puppeteer-extra": "^3.3.6",
