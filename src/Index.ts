@@ -19,10 +19,13 @@ function startServices() {
   );
   console.log(LineBreak);
 
-  // start services, sequentially
+  // * Start each Service, sequentially
   puppeteerService = new PuppeteerService();
+  console.log(`${Symbols.SUCCESS} Started PuppeteerService.`);
   stravaService = new StravaService();
+  console.log(`${Symbols.SUCCESS} Started StravaService.`);
   discordService = new DiscordService();
+  console.log(`${Symbols.SUCCESS} Started DiscordService.`);
 
   console.log(LineBreak);
 }
@@ -33,12 +36,16 @@ async function initializeServices() {
   );
   console.log(LineBreak);
 
-  // purge puppeteer cache (based on services no longer in use; derived from directory names)
-  puppeteerService.purgeCache();
-  // attempt ping to strava
-  await stravaService.attemptPing();
-  // start discord bot
-  await discordService.startBot();
+  // * StravaService
+  await stravaService.init(); // initialize the service
+  await stravaService.attemptPing(); // attempt ping to strava
+
+  // * PuppeteerService
+  puppeteerService.createPaths(); // create paths for puppeteer cache (if do not exist _configPuppeteer.path.cache)
+  puppeteerService.purgeCache(); // purge puppeteer cache (based on services no longer in use; derived from directory names)
+
+  // * DiscordService
+  await discordService.startBot(); // start discord bot
 
   console.log(LineBreak);
 }
