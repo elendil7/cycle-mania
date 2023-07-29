@@ -4,16 +4,20 @@ import { Symbols } from "../Utils/constants";
 import { puppeteerService } from "../Index";
 import getEnv from "../Utils/getEnv";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-import { dirname, resolve } from "path";
+import { dirname } from "path";
 import RefreshTokenDecorator from "../API/Strava/v3/decorators/RefreshTokenDecorator";
 import Club from "../API/Strava/v3/models/Club";
+import LeaderboardAthlete from "../API/Strava/v3/models/LeaderboardAthlete";
 import AuthenticationConfig from "../API/Strava/v3/models/Custom/AuthenticationConfig";
 import StorageSchema from "../API/Strava/v3/models/Custom/StorageSchema";
+import { Browser } from "puppeteer";
+import parse from "node-html-parser";
+import { request } from "undici";
 
 export default class StravaService {
   private readonly _configStrava: typeof config_STRAVA; // private field (immutable) to store the most recent config
   private readonly _configAuth: AuthenticationConfig; // private field (immutable) to store the most recent strava config
-
+  private _browser: Browser; // private field to store the puppeteer browser
   private _accessToken: string; // private field to store the most recent access token
 
   constructor() {
@@ -22,11 +26,8 @@ export default class StravaService {
       client_id: getEnv("STRAVA_CLIENT_ID"),
       client_secret: getEnv("STRAVA_CLIENT_SECRET"),
     };
-    // mandatory setting of access token (useless, as its set in the init function)
-    this._accessToken = "";
-
-    // initialize the service
-    this.init();
+    this._browser = undefined!;
+    this._accessToken = undefined!;
   }
 
   // getter for config_STRAVA (immutable, to be run from the RefreshToken function
@@ -39,17 +40,23 @@ export default class StravaService {
     return this._configAuth;
   }
 
-  // getters for access token
+  // getter  & setter for browser
+  public get browser() {
+    return this._browser;
+  }
+  public set browser(browser: Browser) {
+    this._browser = browser;
+  }
+
+  // getter & setter for access token
   public get accessToken() {
     return this._accessToken;
   }
-
-  // setter for access token
   public set accessToken(token: string) {
     this._accessToken = token;
   }
 
-  private init() {
+  public async init() {
     // * load strava config
     console.log(`${Symbols.HOURGLASS} Loading Strava config...`);
 
@@ -92,9 +99,12 @@ export default class StravaService {
 
     console.log(`${Symbols.SUCCESS} Loaded!`);
 
-    // TODO - make puppeteer browser
-    // make puppeteer browser
-    // await puppeteerService.launchBrowser(this.constructor.name);
+    console.log(`${Symbols.HOURGLASS} Launching StravaService browser...`);
+
+    // launch puppeteer browser
+    this.browser = await puppeteerService.launchBrowser(this.constructor.name);
+
+    console.log(`${Symbols.SUCCESS} Launched!`);
   }
 
   @RefreshTokenDecorator // decorator to refresh token before calling the method
@@ -197,8 +207,36 @@ export default class StravaService {
 
   // leaderboard
   @RefreshTokenDecorator
-  public async getClubGroupLeaderboard(clubID: string) {
+  public async getClubLeaderboard(clubID: string, weekOffset: number) {
     try {
+      /*       const { data, status, headers } = await axios.get(
+        `https://www.strava.com/clubs/${clubID}/leaderboard`,
+        {
+          params: {
+            week_offset: weekOffset,
+          },
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        },
+      );
+
+      console.log(data, status); */
+
+      // axios sucks - can't even handle anti-CORS headers. Uncidi for the win.
+      const { statusCode, body } = await request(
+        `https://www.strava.com/clubs/${clubID}/leaderboard`,
+        {
+          query: {
+            week_offset: weekOffset,
+          },
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        },
+      );
+
+      return (await body.json()).data as LeaderboardAthlete[];
     } catch (e) {
       console.error(e);
     }
