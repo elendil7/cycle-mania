@@ -113,6 +113,10 @@ export enum Symbols {
   ARROW_LEFT = "⬅️",
   ARROW_RIGHT = "➡️",
   HOURGLASS = "⌛",
+  TROPHY = "🏆",
+  GOLD = "🥇",
+  SILVER = "🥈",
+  BRONZE = "🥉",
 }
 
 // Time values
