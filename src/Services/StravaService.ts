@@ -99,12 +99,12 @@ export default class StravaService {
 
     console.log(`${Symbols.SUCCESS} Loaded!`);
 
-    console.log(`${Symbols.HOURGLASS} Launching StravaService browser...`);
+    /*     console.log(`${Symbols.HOURGLASS} Launching StravaService browser...`);
 
     // launch puppeteer browser
     this.browser = await puppeteerService.launchBrowser(this.constructor.name);
 
-    console.log(`${Symbols.SUCCESS} Launched!`);
+    console.log(`${Symbols.SUCCESS} Launched!`); */
   }
 
   @RefreshTokenDecorator // decorator to refresh token before calling the method

@@ -41,8 +41,8 @@ async function initializeServices() {
   await stravaService.attemptPing(); // attempt ping to strava
 
   // * PuppeteerService
-  puppeteerService.createPaths(); // create paths for puppeteer cache (if do not exist _configPuppeteer.path.cache)
-  puppeteerService.purgeCache(); // purge puppeteer cache (based on services no longer in use; derived from directory names)
+  /*   puppeteerService.createPaths(); // create paths for puppeteer cache (if do not exist _configPuppeteer.path.cache)
+  puppeteerService.purgeCache(); // purge puppeteer cache (based on services no longer in use; derived from directory names) */
 
   // * DiscordService
   await discordService.startBot(); // start discord bot
