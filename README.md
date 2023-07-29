@@ -80,6 +80,10 @@ pnpm run pm2:log
 <em>Order: (Newest => Oldest)</em>
 
 - [] [] []
+- [x] [29.07.2023] [v1.0.6] Functionality update
+  - Created Strava Leaderboard command!
+  - Improved code flow for some services.
+  - Installed Undici to bypass CORS, to perform unofficial API HTTP requests.
 - [x] [28.07.2023] [v1.0.5] Update the README.md gallery, and add a **Setup Guide**.
 - [x] [23.07.2023] [v1.0.5] Complete Strava API implementation - Self Sufficient Token Refresh
   - Polished RefreshToken method which uses a decorator to run checks before each API call.
