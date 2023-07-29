@@ -5,32 +5,20 @@ import { existsSync, mkdirSync, readdirSync, rmdirSync } from "fs";
 import { Browser } from "puppeteer";
 import { join } from "path";
 import { Symbols } from "../Utils/constants";
+import { config_PUPPETEER } from "../../config";
 
 export default class PuppeteerService {
-  private browsers: Map<string, Browser>;
+  // private field to store the most recent config
+  private readonly _configPuppeteer: typeof config_PUPPETEER;
+  // puppeteer config arguments
+  private readonly _puppeteerArgs: string[];
+  // create a map of browsers (key: serviceName, value: browser)
+  // each browser is a new instance of puppeteer's browser, and will be used to access a specific service (for services which lack an API)
+  private _browsers: Map<string, Browser>;
 
   constructor() {
-    // create a map of browsers (key: serviceName, value: browser)
-    // each browser is a new instance of puppeteer's browser, and will be used to access a specific service (for services which lack an API)
-    this.browsers = new Map<string, Browser>();
-
-    // add adblocker and stealth plugins to puppeteer
-    puppeteer.use(
-      Adblocker({
-        blockTrackers: true,
-        blockTrackersAndAnnoyances: true,
-        useCache: true,
-      }),
-    );
-    puppeteer.use(StealthPlugin({}));
-
-    // create paths for puppeteer cache (if do not exist /system/data/puppeteer)
-    this.createPaths();
-  }
-
-  public async launchBrowser(serviceName: string) {
-    // create arguments for puppeteer
-    const puppeteerArgs = [
+    this._configPuppeteer = config_PUPPETEER;
+    this._puppeteerArgs = [
       // '--autoplay-policy=user-gesture-required',
       // '--disable-background-networking',
       // '--disable-background-timer-throttling',
@@ -72,53 +60,87 @@ export default class PuppeteerService {
       "--ignore-certifcate-errors-spki-list",
       // '--window-size=1920,1080', // set browser window size
     ];
+    this._browsers = new Map<string, Browser>();
 
-    // create paths (using __dirname) to the following folders:
-    // ../../system
-    // ../../system/cache
-    // ../../system/cache/puppeteer
-    // ../../system/cache/puppeteer/${serviceName}
-    const system = join(__dirname, "../../system");
-    const cache = join(__dirname, "../../system/cache");
-    const puppeteerCache = join(__dirname, "../../system/cache/puppeteer");
-    const serviceCache = join(
-      __dirname,
-      `../../system/cache/puppeteer/${serviceName}`,
+    // add adblocker and stealth plugins to puppeteer
+    puppeteer.use(
+      Adblocker({
+        blockTrackers: true,
+        blockTrackersAndAnnoyances: true,
+        useCache: true,
+      }),
     );
+    puppeteer.use(StealthPlugin({}));
+  }
 
-    // log all dirs
-    /*     console.log(`system: ${system}`)
-    console.log(`cache: ${cache}`)
-    console.log(`puppeteerCache: ${puppeteerCache}`)
-    console.log(`serviceCache: ${serviceCache}`) */
+  // getters
+  public get configPuppeteer() {
+    return this._configPuppeteer;
+  }
 
-    // create subfolders ../../system/cache/puppeteer/${serviceName} if it does not exist
+  public get puppeteerArgs() {
+    return this._puppeteerArgs;
+  }
+
+  public get browsers() {
+    return this._browsers;
+  }
+
+  public async getBrowser(serviceName: string): Promise<Browser> {
+    // grab browser from the map
+    const browser = this.browsers.get(serviceName);
+
+    // if browser exists, return it
+    if (this.browsers.has(serviceName) && browser) return browser;
+
+    // if browser does not exist, launch a new browser
+    console.log(`${Symbols.LOADING} Trying to launch a new browser...`);
+    // start a new browser in that service name
+    return await this.launchBrowser(serviceName);
+  }
+
+  public createPaths() {
+    // get path
+    const path = config_PUPPETEER.path.cache;
+
+    // recursively create the path if it does not exist
+    if (!existsSync(path)) {
+      mkdirSync(path, { recursive: true });
+    }
+  }
+
+  public purgeCache() {
+    const path = config_PUPPETEER.path.cache;
+
+    // read paths of every dir in the ../system/cache/puppeteer folder
+    const dirs = readdirSync(path);
+
+    // loop through each dir
+    for (const dir of dirs) {
+      // if the dir name is not included in the Map of browsers (key)
+      if (!this.browsers.has(dir)) {
+        // delete the dir
+        rmdirSync(`${path}/${dir}`),
+          {
+            recursive: true,
+          };
+      }
+    }
+  }
+
+  public async launchBrowser(serviceName: string) {
+    // get the path of the puppeteer cache folder from the config file
+    const serviceCachePath = `${config_PUPPETEER.path.cache}/${serviceName}`;
+
+    // create subfolders recursively (serviceCachePath) if it does not exist
     // use the serviceName as the name of the subfolder
-    // use FS sync
-
-    // create directory "system" (if does not already exist)
-    if (!existsSync(system)) {
-      mkdirSync(system);
-    }
-
-    // create directory "cache" (if does not already exist)
-    if (!existsSync(cache)) {
-      mkdirSync(cache);
-    }
-
-    // create directory "puppeteer" (if does not already exist)
-    if (!existsSync(puppeteerCache)) {
-      mkdirSync(puppeteerCache);
-    }
-
-    // create directory "serviceName" (if does not already exist)
-    if (!existsSync(serviceCache)) {
-      mkdirSync(serviceCache);
+    if (!existsSync(serviceCachePath)) {
+      mkdirSync(serviceCachePath, { recursive: true });
     }
 
     const browser = await puppeteer.launch({
       headless: "new",
-      args: puppeteerArgs,
+      args: this.puppeteerArgs,
       defaultViewport: {
         width: 1920,
         height: 1080,
@@ -128,12 +150,7 @@ export default class PuppeteerService {
       dumpio: true,
       timeout: 0,
       product: "chrome",
-      userDataDir: serviceCache,
-      // using chromium, because adblock & stealth plugins are not supported by firefox
-      /*       executablePath: join(
-        __dirname,
-        '../../system/browsers/chrome-win/chrome.exe'
-      ) */
+      userDataDir: serviceCachePath,
     });
 
     // store the browser in the map
@@ -141,48 +158,6 @@ export default class PuppeteerService {
 
     // return the browser
     return browser;
-  }
-
-  public async getBrowser(serviceName: string) {
-    if (this.browsers.has(serviceName)) {
-      return this.browsers.get(serviceName);
-    } else {
-      console.error(
-        `${Symbols.FAILURE} Failed to find browser 
-				"${serviceName}". This error should not happen - check code.`,
-      );
-
-      console.log(`${Symbols.LOADING} Trying to launch a new browser...`);
-
-      // start a new browser in that service name
-      return this.launchBrowser(serviceName);
-    }
-  }
-
-  public createPaths() {
-    // get path of the puppeteer cache folder, 1 level above the service cache folder
-    const path = join(__dirname, "../../system/cache/puppeteer");
-
-    // recursively create the path if it does not exist
-    if (!existsSync(path)) {
-      mkdirSync(path, { recursive: true });
-    }
-  }
-
-  public purgeCache() {
-    // read paths of every dir in the ../system/cache/puppeteer folder
-    const dirs = readdirSync(join(__dirname, "../../system/cache/puppeteer"));
-
-    // loop through each dir
-    for (const dir of dirs) {
-      // if the dir name is not included in the Map of browsers (key)
-      if (!this.browsers.has(dir)) {
-        // delete the dir
-        rmdirSync(join(__dirname, `../../system/cache/puppeteer/${dir}`), {
-          recursive: true,
-        });
-      }
-    }
   }
 }
 
