@@ -35,6 +35,9 @@ dependencies:
   puppeteer-extra-plugin-stealth:
     specifier: ^2.11.2
     version: 2.11.2(puppeteer-extra@3.3.6)
+  undici:
+    specifier: ^5.22.1
+    version: 5.22.1
 
 devDependencies:
   nodemon:
