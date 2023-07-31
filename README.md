@@ -80,6 +80,10 @@ pnpm run pm2:log
 <em>Order: (Newest => Oldest)</em>
 
 - [] [] []
+- [x] [31.07.2023] [v1.0.7] Leaderboard command complete
+  - Polished the field formatting.
+  - Added button to switch between Metric <=> Imperial.
+  - Suffered an extensive amount.
 - [x] [29.07.2023] [v1.0.6] Functionality update
   - Created Strava Leaderboard command!
   - Improved code flow for some services.
