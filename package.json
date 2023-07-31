@@ -4,7 +4,7 @@
   "description": "A custom bot built for the Cycle Mania community, to communicate with Strava and do other cool things.",
   "main": "./src/Index.ts",
   "scripts": {
-    "nodemon": "nodemon ./src/Index.ts --watch ./src --ignore ./src/Discord/Commands",
+    "nodemon": "nodemon ./src/Index.ts --watch ./src",
     "build": "tsc",
     "start": "node ./dist/src/Index.js",
     "pm2:start": "pm2 start ./dist/src/Index.js --name cycle-mania",
