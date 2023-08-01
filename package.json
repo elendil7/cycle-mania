@@ -24,6 +24,7 @@
   "dependencies": {
     "@types/node": "^20.4.4",
     "axios": "^1.4.0",
+    "cron": "^2.4.0",
     "discord.js": "^14.11.0",
     "dotenv": "^16.3.1",
     "node-html-parser": "^6.1.5",
@@ -32,6 +33,7 @@
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-adblocker": "^2.13.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "striptags": "^3.2.0",
     "undici": "^5.22.1"
   },
   "prettier": "./.prettierrc.yaml"
