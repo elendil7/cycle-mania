@@ -1,7 +1,6 @@
 import { config_STRAVA } from "../../config";
 import axios from "axios";
 import { Symbols } from "../Utils/constants";
-import { puppeteerService } from "../Index";
 import getEnv from "../Utils/getEnv";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { dirname } from "path";
@@ -11,12 +10,16 @@ import LeaderboardAthlete from "../API/Strava/v3/models/LeaderboardAthlete";
 import AuthenticationConfig from "../API/Strava/v3/models/Custom/AuthenticationConfig";
 import StorageSchema from "../API/Strava/v3/models/Custom/StorageSchema";
 import { Browser } from "puppeteer";
-import parse from "node-html-parser";
 import { request } from "undici";
+import { getUnixTimestamp } from "../Utils/timeConversions";
+import { puppeteerService } from "../Index";
+import parse from "node-html-parser";
+import RichClubActivities from "../API/Strava/v3/models/Custom/RichClubActivities";
 
 export default class StravaService {
   private readonly _configStrava: typeof config_STRAVA; // private field (immutable) to store the most recent config
   private readonly _configAuth: AuthenticationConfig; // private field (immutable) to store the most recent strava config
+  private readonly _cookie: string; // private field (immutable) to store the user's cookie (for cron jobs)
   private _browser: Browser; // private field to store the puppeteer browser
   private _accessToken: string; // private field to store the most recent access token
 
@@ -26,6 +29,7 @@ export default class StravaService {
       client_id: getEnv("STRAVA_CLIENT_ID"),
       client_secret: getEnv("STRAVA_CLIENT_SECRET"),
     };
+    this._cookie = getEnv("STRAVA_USER_COOKIE");
     this._browser = undefined!;
     this._accessToken = undefined!;
   }
@@ -38,6 +42,11 @@ export default class StravaService {
   // getter for private field (current stravaConfig), to be run from the RefreshToken function
   public get authConfig() {
     return this._configAuth;
+  }
+
+  // getter for private field (current cookie), to be used for retrieving Rich application/json data from Strava, in cron jobs
+  public get cookie() {
+    return this._cookie;
   }
 
   // getter  & setter for browser
@@ -205,24 +214,16 @@ export default class StravaService {
     });
   }
 
-  // leaderboard
   @RefreshTokenDecorator
+  public getClubSegmentLeaderboard() {
+    return new Promise((resolve, reject) => {
+      resolve([]);
+    });
+  }
+
+  // leaderboard
   public async getClubLeaderboard(clubID: string, weekOffset: number) {
     try {
-      /*       const { data, status, headers } = await axios.get(
-        `https://www.strava.com/clubs/${clubID}/leaderboard`,
-        {
-          params: {
-            week_offset: weekOffset,
-          },
-          headers: {
-            "X-Requested-With": "XMLHttpRequest",
-          },
-        },
-      );
-
-      console.log(data, status); */
-
       // axios sucks - can't even handle anti-CORS headers. Uncidi for the win.
       const { statusCode, body } = await request(
         `https://www.strava.com/clubs/${clubID}/leaderboard`,
@@ -242,10 +243,24 @@ export default class StravaService {
     }
   }
 
-  @RefreshTokenDecorator
-  public getClubSegmentLeaderboard() {
-    return new Promise((resolve, reject) => {
-      resolve([]);
-    });
+  public async getRichClubActivities(clubID: string) {
+    try {
+      // get unixTimestamp
+      const timestamp = getUnixTimestamp();
+
+      const { statusCode, body } = await request(
+        `https://www.strava.com/clubs/${clubID}/feed?feed_type=club&club_id=${clubID}&before=${timestamp}`,
+        {
+          headers: {
+            Accept: "application/json",
+            Cookie: this.cookie,
+          },
+        },
+      );
+
+      return (await body.json()) as RichClubActivities;
+    } catch (e) {
+      console.log(e);
+    }
   }
 }
