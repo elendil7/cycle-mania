@@ -1,6 +1,6 @@
 {
   "name": "cycle-mania",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "A custom bot built for the Cycle Mania community, to communicate with Strava and do other cool things.",
   "main": "./src/Index.ts",
   "scripts": {
@@ -16,6 +16,7 @@
   "author": "Vitalijs Strelcuks",
   "license": "ISC",
   "devDependencies": {
+    "@types/luxon": "^3.3.1",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.0",
     "ts-node": "^10.9.1",
