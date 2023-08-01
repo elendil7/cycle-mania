@@ -26,4 +26,8 @@ export default class DiscordService {
     await this.client.loadEvents();
     await this.client.start();
   }
+
+  get discordbot() {
+    return this.client;
+  }
 }
