@@ -81,7 +81,7 @@ async function startCronJobs() {
 startServices();
 
 // export certain services as singletons (for use in other files, before services are initialized)
-export { puppeteerService, stravaService };
+export { puppeteerService, stravaService, discordService };
 
 // initialize services
 initializeServices();
