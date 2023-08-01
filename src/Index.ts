@@ -7,6 +7,13 @@ import PuppeteerService from "./Services/PuppeteerService";
 import StravaService from "./Services/StravaService";
 import DiscordService from "./Services/DiscordService";
 import { LineBreak, Symbols } from "./Utils/constants";
+import {
+  scheduleActivitiesJob,
+  scheduleLeaderboardJob,
+} from "./Jobs/StravaCronJobs";
+import { sleep } from "./Utils/sleep";
+import { Events } from "discord.js";
+import { config_CRONJOB } from "../config";
 
 // variables
 let puppeteerService: PuppeteerService;
@@ -48,6 +55,26 @@ async function initializeServices() {
   await discordService.startBot(); // start discord bot
 
   console.log(LineBreak);
+
+  // start cron jobs
+  startCronJobs();
+}
+
+async function startCronJobs() {
+  // on discord bot ready
+  discordService.discordbot.once(Events.ClientReady, () => {
+    // if leaderboard cron job is enabled, start it
+    if (config_CRONJOB.enabled.leaderboard) {
+      scheduleLeaderboardJob.fireOnTick();
+      scheduleLeaderboardJob.start();
+    }
+
+    // if activities cron job is enabled, start it
+    if (config_CRONJOB.enabled.activities) {
+      scheduleActivitiesJob.fireOnTick();
+      scheduleActivitiesJob.start();
+    }
+  });
 }
 
 // start services
