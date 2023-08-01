@@ -117,6 +117,13 @@ export enum Symbols {
   GOLD = "🥇",
   SILVER = "🥈",
   BRONZE = "🥉",
+  PARTY = "🥳",
+  PARTY2 = "🎉",
+  TIME = "⏰",
+  ATHLETE = "🚴‍♂️",
+  ATHLETEID = "🆔",
+  DATE = "📅",
+  DESCRIPTION = "📝",
 }
 
 // Time values

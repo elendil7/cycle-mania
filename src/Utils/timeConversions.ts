@@ -25,3 +25,7 @@ export function getStartOfWeekFromOffset(offset: number): string {
 
   return formattedDate;
 }
+
+export function getUnixTimestamp() {
+  return Math.floor(Date.now() / 1000);
+}
