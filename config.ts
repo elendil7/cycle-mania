@@ -12,10 +12,10 @@ export const config_DISCORDBOT = {
   },
   // Guild IDs where slash commands should be loaded
   guildIDs: ["843858501839355966", "1127689845611970641"],
-  // Server channel ID (for timed announcements)
-  channelID: {
-    announcements: "1127690836914745465",
+  // Server channel ID (for cronjob-timed announcements)
+  channelIDs: {
     leaderboard: "1130292345556979722",
+    activities: "1134539176839237753",
   },
 };
 
@@ -31,11 +31,12 @@ export const config_STRAVA = {
     redirect_URL: "http://localhost:3000/strava",
   },
   // your strava club ID
-  clubID: 1154899,
+  clubID: "1154899",
   // paths
   path: {
     // storage file dir path
     storage: resolve(__dirname, "./system/data/storage.json"),
+    activities: resolve(__dirname, "./system/data/activities.json"),
   },
 };
 
@@ -44,5 +45,23 @@ export const config_PUPPETEER = {
   path: {
     // puppeteer cache dir path
     cache: resolve(__dirname, "./system/cache/puppeteer"),
+  },
+};
+
+// * Cronjob Configuration
+export const config_CRONJOB = {
+  // enabled / disabled
+  enabled: {
+    // leaderboard cronjob
+    leaderboard: true,
+    // activities cronjob
+    activities: true,
+  },
+  // cronjob times
+  time: {
+    // leaderboard cronjob
+    leaderboard: "0 0 * * *",
+    // activities cronjob
+    activities: "0 * * * *",
   },
 };
