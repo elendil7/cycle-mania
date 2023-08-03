@@ -5,8 +5,6 @@ import getEnv from "../../Utils/getEnv";
 import { config_DISCORDBOT } from "../../../config";
 import { pluralize } from "../../Utils/pluralize";
 
-async function unregisterSlashCommands() {}
-
 export default async function registerSlashCommands(
   commands: Collection<string, Command>,
 ) {
@@ -48,6 +46,18 @@ export default async function registerSlashCommands(
       console.log(
         `${Symbols.SUCCESS} Successfully reloaded ${totalCommands} application (/) ${ocdTotalCommands} globally.`,
       );
+
+      // also (silently) delete all commands from all guilds
+      for (let i = 0; i < totalGuilds; ++i) {
+        const guildID = config_DISCORDBOT.guildIDs[i];
+
+        await rest.put(
+          Routes.applicationGuildCommands(getEnv("DISCORD_BOT_ID"), guildID),
+          {
+            body: [],
+          },
+        );
+      }
     }
     // * otherwise (if in dev), deploy slash commands to each guild
     else {
@@ -70,6 +80,11 @@ export default async function registerSlashCommands(
       console.log(
         `${Symbols.SUCCESS} Successfully reloaded ${totalCommands} application (/) ${ocdTotalCommands} in ${totalGuilds} ${ocdTotalGuilds}.`,
       );
+
+      // also (silently) delete all commands globally
+      await rest.put(Routes.applicationCommands(getEnv("DISCORD_BOT_ID")), {
+        body: [],
+      });
     }
   } catch (error) {
     // And of course, make sure you catch and log any errors!
