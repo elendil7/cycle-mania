@@ -80,10 +80,15 @@ pnpm run pm2:log
 <em>Order: (Newest => Oldest)</em>
 
 - [] [] []
+- [x] [03.08.2023] [v1.1.1] MongoDB migration update
+  - Migrated local storage.json & activities.json to remote mongoDB cluster, to avoid the problem of local .jsons being overwritten on re-building of app (on such services as Heroku / Railway)
+  - Beautified the leaderboard, club, and club activity embeds.
+  - Other miscellaneous improvements to project structure.
 - [x] [01.08.2023] [v1.1.0] Cron job update
   - Added cron jobs for:
     - Auto sending strava club leaderboard embed to specified discord channel on a daily basis.
     - Auto sending new activities (submitted by members of your strava club) to specified discord channel (checks for new activities on an hourly basis).
+  - Stopped relying heavily on Strava's API.
 - [x] [31.07.2023] [v1.0.7] Leaderboard command complete
   - Polished the field formatting.
   - Added button to switch between Metric <=> Imperial.
