@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { Colors, EmbedBuilder } from "discord.js";
 import { Symbols } from "../../../../Utils/constants";
 import LeaderboardAthlete from "../../../../API/Strava/v3/models/LeaderboardAthlete";
 import Club from "../../../../API/Strava/v3/models/Club";
@@ -41,6 +41,7 @@ export async function LeaderboardEmbed(
 
   let embed = new EmbedBuilder()
     .setTitle(`${Symbols.STAR} ${club.name}'s Leaderboard ${Symbols.STAR}`)
+    .setURL(`https://www.strava.com/clubs/${club.id}`)
     .setThumbnail(club.profile)
     .setDescription(
       `${Symbols.TROPHY} **Top Athlete**: ${topAthlete.athlete_firstname} ${
@@ -55,7 +56,8 @@ export async function LeaderboardEmbed(
       text: `Offset 0 = this week, offset 1 = last week`,
       iconURL: club.profile_medium,
     })
-    .setTimestamp();
+    .setTimestamp()
+    .setColor(Colors.Orange);
 
   for (let i = 0; i < leaderboard.length; i++) {
     const athlete = leaderboard[i];

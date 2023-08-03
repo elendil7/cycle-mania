@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { Colors, EmbedBuilder } from "discord.js";
 import { Symbols } from "../../../../Utils/constants";
 import Club from "../../../../API/Strava/v3/models/Club";
 
@@ -13,14 +13,26 @@ export async function InvalidClubEmbed(clubID: string) {
 export async function ClubInfoEmbed(club: Club) {
   let embed = new EmbedBuilder()
     .setTitle(`${Symbols.STAR} ${club.name} club info ${Symbols.STAR}`)
+    .setURL(`https://www.strava.com/clubs/${club.id}`)
     .setDescription(`Here's some info about the ${club.name} strava club.`)
-    .setURL(`https://www.strava.com/clubs/${club.url}`)
     .setThumbnail(club.profile_medium)
     .setFields(
-      { name: "Members", value: String(club.member_count), inline: true },
-      { name: "Club ID", value: String(club.id), inline: true },
-      { name: "State", value: club.state || "N.A.", inline: true },
-      { name: "Country", value: club.country, inline: true },
+      {
+        name: "Members",
+        value: `${"`"}${String(club.member_count)}${"`"}`,
+        inline: true,
+      },
+      {
+        name: "Club ID",
+        value: `${"`"}${String(club.id)}${"`"}`,
+        inline: true,
+      },
+      {
+        name: "State",
+        value: `${"`"}${club.state || "N.A."}${"`"}`,
+        inline: true,
+      },
+      { name: "Country", value: `${"`"}${club.country}${"`"}`, inline: true },
       {
         name: "Activities",
         // @ts-ignore
@@ -33,7 +45,8 @@ export async function ClubInfoEmbed(club: Club) {
     .setFooter({
       text: club.name,
       iconURL: club.profile_medium,
-    });
+    })
+    .setColor(Colors.Orange);
 
   return embed;
 }
