@@ -33,9 +33,6 @@ export async function LeaderboardEmbed(
   // sort by rank
   leaderboard.sort((a, b) => a.rank - b.rank);
 
-  // truncate by 10
-  leaderboard = leaderboard.slice(0, 10);
-
   // grab the top athlete
   const topAthlete = leaderboard[0];
 
@@ -59,7 +56,10 @@ export async function LeaderboardEmbed(
     .setTimestamp()
     .setColor(Colors.Orange);
 
-  for (let i = 0; i < leaderboard.length; i++) {
+  // variable defining total athletes to display on leaderboard
+  const totalAthletesToDisplay = Math.min(leaderboard.length, 10);
+
+  for (let i = 0; i < totalAthletesToDisplay; i++) {
     const athlete = leaderboard[i];
     embed.addFields({
       name: `${
@@ -71,13 +71,27 @@ export async function LeaderboardEmbed(
           ? Symbols.BRONZE
           : Symbols.BUG
       } #${i + 1}. ${athlete.athlete_firstname} ${athlete.athlete_lastname}`,
-      value: `**Distance:** ${(athlete.distance / 1000).toFixed(
+      value: `**Distance:** ${"`"}${(athlete.distance / 1000).toFixed(
         2,
-      )}km\n**Elevation Gain:** ${Math.floor(
+      )}km${"`"}\n**Elevation Gain:** ${"`"}${Math.floor(
         athlete.elev_gain,
-      )}m\n**Moving Time:** ${formatSecondsToHHMM(
+      )}m${"`"}\n**Moving Time:** ${"`"}${formatSecondsToHHMM(
         athlete.moving_time,
-      )}\n**Total Activities:** ${athlete.num_activities}`,
+      )}${"`"}\n**Total Activities:** ${"`"}${athlete.num_activities}${"`"}`,
+      inline: true,
+    });
+  }
+
+  // if there are more than 10 athletes on LB, add a field stating that there are more athletes
+
+  if (leaderboard.length >= totalAthletesToDisplay) {
+    embed.addFields({
+      name: `${Symbols.ATHLETE} More athletes...`,
+      value: `There are ${
+        leaderboard.length - totalAthletesToDisplay
+      } more athletes to see on the leaderboard. To view them, click [here](https://www.strava.com/clubs/${
+        club.id
+      })`,
       inline: true,
     });
   }

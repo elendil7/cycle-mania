@@ -3,7 +3,11 @@ import DiscordBot from "../../../Structures/DiscordBot";
 import SlashCommand from "../../../Structures/Command";
 import { config_STRAVA } from "../../../../../config";
 import { stravaService } from "../../../../Index";
-import { ClubInfoEmbed, InvalidClubEmbed } from "./ClubEmbeds";
+import {
+  ClubInfoEmbed,
+  FetchingClubEmbed,
+  InvalidClubEmbed,
+} from "./ClubEmbeds";
 
 const Club: SlashCommand = {
   data: new SlashCommandBuilder()
@@ -23,21 +27,27 @@ const Club: SlashCommand = {
     );
 
     try {
+      // reply with fetching embed
+      await interaction.reply({
+        embeds: [await FetchingClubEmbed()],
+      });
+
       // get club info
       const club = await stravaService.getClub(clubID);
 
       // reply with club stats (if no error is thrown in the external getClub method), and if the club exists
-      await interaction.reply({
+      await interaction.editReply({
         embeds: [await ClubInfoEmbed(club)],
       });
     } catch (e: any) {
       // if error is 404, don't throw an error, just reply with an embed
-      if (e.response.status !== 404) return console.error(e);
+      if (e.response.status === 404) {
+        return await interaction.reply({
+          embeds: [await InvalidClubEmbed(clubID)],
+        });
+      }
 
-      await interaction.reply({
-        embeds: [await InvalidClubEmbed(clubID)],
-      });
-      return;
+      return console.error(e);
     }
   },
 };

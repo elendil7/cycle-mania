@@ -10,6 +10,12 @@ export async function InvalidClubEmbed(clubID: string) {
   return embed;
 }
 
+export async function FetchingClubEmbed() {
+  return new EmbedBuilder()
+    .setTitle(`${Symbols.HOURGLASS} Fetching club...`)
+    .setDescription(`Fetching club info...`);
+}
+
 export async function ClubInfoEmbed(club: Club) {
   let embed = new EmbedBuilder()
     .setTitle(`${Symbols.STAR} ${club.name} club info ${Symbols.STAR}`)
