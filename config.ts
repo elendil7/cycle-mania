@@ -11,7 +11,7 @@ export const config_DISCORDBOT = {
     bronze: "1130274631396368506",
   },
   // Guild IDs where slash commands should be loaded
-  guildIDs: ["843858501839355966", "1127689845611970641"],
+  guildIDs: ["843858501839355966"],
 };
 
 // * Strava Service Configuration

@@ -3,6 +3,9 @@ import { Collection, REST, Routes } from "discord.js";
 import { Symbols } from "../../Utils/constants";
 import getEnv from "../../Utils/getEnv";
 import { config_DISCORDBOT } from "../../../config";
+import { pluralize } from "../../Utils/pluralize";
+
+async function unregisterSlashCommands() {}
 
 export default async function registerSlashCommands(
   commands: Collection<string, Command>,
@@ -26,27 +29,48 @@ export default async function registerSlashCommands(
   let totalCommands = commandsInJSON.length;
   let totalGuilds = config_DISCORDBOT.guildIDs.length;
 
+  // ocd formatting
+  const ocdTotalCommands = pluralize("command", totalCommands);
+  const ocdTotalGuilds = pluralize("guild", totalGuilds);
+
   // and deploy your commands!
   try {
-    console.log(
-      `${Symbols.HOURGLASS} Started refreshing ${totalCommands} application (/) commands in ${totalGuilds} guilds.`,
-    );
+    // * if in production, deploy slash commands globally
+    if (getEnv("PROD") === "true") {
+      console.log(
+        `${Symbols.HOURGLASS} Started refreshing ${totalCommands} application (/) ${ocdTotalCommands} globally.`,
+      );
 
-    for (let i = 0; i < totalGuilds; ++i) {
-      const guildID = config_DISCORDBOT.guildIDs[i];
+      await rest.put(Routes.applicationCommands(getEnv("DISCORD_BOT_ID")), {
+        body: commandsInJSON,
+      });
 
-      // The put method is used to fully refresh all commands in the guild with the current set
-      await rest.put(
-        Routes.applicationGuildCommands(getEnv("DISCORD_BOT_ID"), guildID),
-        {
-          body: commandsInJSON,
-        },
+      console.log(
+        `${Symbols.SUCCESS} Successfully reloaded ${totalCommands} application (/) ${ocdTotalCommands} globally.`,
       );
     }
+    // * otherwise (if in dev), deploy slash commands to each guild
+    else {
+      console.log(
+        `${Symbols.HOURGLASS} Started refreshing ${totalCommands} application (/) ${ocdTotalCommands} in ${totalGuilds} ${ocdTotalGuilds}.`,
+      );
 
-    console.log(
-      `${Symbols.SUCCESS} Successfully reloaded ${totalCommands} application (/) commands in ${totalGuilds} guilds.`,
-    );
+      for (let i = 0; i < totalGuilds; ++i) {
+        const guildID = config_DISCORDBOT.guildIDs[i];
+
+        // The put method is used to fully refresh all commands in the guild with the current set
+        await rest.put(
+          Routes.applicationGuildCommands(getEnv("DISCORD_BOT_ID"), guildID),
+          {
+            body: commandsInJSON,
+          },
+        );
+      }
+
+      console.log(
+        `${Symbols.SUCCESS} Successfully reloaded ${totalCommands} application (/) ${ocdTotalCommands} in ${totalGuilds} ${ocdTotalGuilds}.`,
+      );
+    }
   } catch (error) {
     // And of course, make sure you catch and log any errors!
     console.error(error);
