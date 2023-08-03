@@ -1,18 +1,13 @@
 import { stravaService, discordService } from "../Index";
 // import cron
 import { CronJob } from "cron";
-import { config_CRONJOB, config_DISCORDBOT, config_STRAVA } from "../../config";
+import { config_CRONJOB, config_STRAVA } from "../../config";
 import { ChannelType } from "discord.js";
 import { ClubActivitiesEmbed } from "../Discord/Embeds/Strava/ClubActivitiesEmbed";
 import { sleep } from "../Utils/sleep";
-import { existsSync, readFileSync, writeFileSync } from "fs";
 import { LeaderboardEmbed } from "../Discord/Commands/🚴‍♀️ Strava/Leaderboard/LeaderboardEmbeds";
 import { ClubActivity } from "../API/Strava/v3/models/Custom/RichClubActivities";
 import getEnv from "../Utils/getEnv";
-import {
-  createTokenStorage,
-  getTokenStorage,
-} from "../Mongo/data/TokenStorageRepository";
 import {
   createClubActivityIDs,
   getClubActivityIDs,
@@ -65,6 +60,9 @@ export const scheduleLeaderboardJob = new CronJob(
       );
     }
   },
+  null,
+  true,
+  "Europe/London",
 );
 
 // schedule activities job

@@ -1,13 +1,12 @@
 import { CronJob } from "cron";
+import { discordService } from "../Index";
+import { Events } from "discord.js";
+import { join } from "path";
+import { readdirSync } from "fs";
 import {
   scheduleActivitiesJob,
   scheduleLeaderboardJob,
 } from "../Jobs/StravaCronJobs";
-import { discordService } from "../Index";
-import { config_CRONJOB } from "../../config";
-import { Events } from "discord.js";
-import { join } from "path";
-import { readdirSync } from "fs";
 
 export default class CronJobService {
   private _jobs: Map<string, CronJob>;
@@ -29,10 +28,22 @@ export default class CronJobService {
     // * import all job exports from each file from the src\Jobs\ directory, dynamically
 
     // get all files from the src\Jobs\ directory
-    const jobFiles = readdirSync(join(__dirname, "../Jobs/"));
+    // ! filtering out any files that are not .js or .ts files, specifically (for build)
+    const jobFiles = readdirSync(join(__dirname, "../Jobs/"), {
+      encoding: "utf-8",
+      withFileTypes: false,
+    }).filter((file) => {
+      const fileName = file.split(".")[0];
+      return file === `${fileName}.js` || file === `${fileName}.ts`;
+    });
+
+    console.log(jobFiles);
 
     // iterate through each file
-    for (const jobFile of jobFiles) {
+    for (let jobFile of jobFiles) {
+      // strip the file's extension
+      jobFile = jobFile.split(".")[0];
+
       // get the file's path
       const jobFilePath = join(__dirname, "../Jobs/", jobFile);
 
@@ -63,7 +74,7 @@ export default class CronJobService {
       // start all jobs
       this._jobs.forEach((job) => {
         job.fireOnTick(); // fire on tick immediately
-        job.start();
+        job.start(); // start job
       });
     });
   }
