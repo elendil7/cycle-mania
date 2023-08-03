@@ -1,5 +1,7 @@
 import { Interaction } from "discord.js";
 import DiscordBot from "../Structures/DiscordBot";
+import { IsUserBeingCooledDown } from "./CooldownHandler";
+import { YouAreOnCooldownEmbed } from "../Embeds/Reusable/ErrorEmbeds";
 
 export default async function CommandHandler(
   client: DiscordBot,
@@ -10,6 +12,16 @@ export default async function CommandHandler(
 
   // avoid handling any other command besides slash commands
   if (!interaction.isChatInputCommand()) return;
+
+  // check if user is a bot
+  if (interaction.user.bot) return;
+
+  // check if user is on cooldown
+  if (IsUserBeingCooledDown(client, interaction))
+    return interaction.reply({
+      embeds: [YouAreOnCooldownEmbed()],
+      ephemeral: true,
+    });
 
   // get the command from the client.commands Collection
   const command = client

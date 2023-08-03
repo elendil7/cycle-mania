@@ -11,10 +11,11 @@ import getEnv from "../../Utils/getEnv";
 import { Symbols } from "../../Utils/constants";
 
 export default class DiscordBot extends Client {
-  private config: any;
+  private readonly config: any;
   private events: IEventsCollection;
   private commandCategories: ICommandCategoriesCollection;
   private commands: ICommandsCollection;
+  public cooldowns: Map<string, number>;
 
   constructor(args: any) {
     super(args);
@@ -22,6 +23,7 @@ export default class DiscordBot extends Client {
     this.events = new Collection<string, Events>();
     this.commandCategories = new Collection<string, string[]>();
     this.commands = new Collection<string, SlashCommand>();
+    this.cooldowns = new Map<string, number>();
   }
 
   // getters

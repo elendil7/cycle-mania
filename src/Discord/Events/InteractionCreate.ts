@@ -1,7 +1,6 @@
 import { Events, Interaction } from "discord.js";
 import DiscordBot from "../Structures/DiscordBot";
 import CommandHandler from "../Handlers/CommandHandler";
-import CooldownHandler from "../Handlers/CooldownHandler";
 
 export default {
   name: Events.InteractionCreate,
@@ -12,9 +11,6 @@ export default {
 
     // avoid handling any other command besides slash commands
     if (!interaction.isChatInputCommand()) return;
-
-    // run cooldown handler
-    await CooldownHandler(client, interaction);
 
     // run command handler
     await CommandHandler(client, interaction);

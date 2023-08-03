@@ -12,6 +12,13 @@ export const config_DISCORDBOT = {
   },
   // Guild IDs where slash commands should be loaded
   guildIDs: ["843858501839355966"],
+  // ensure that both cooldown.seconds and cooldown.milliseconds are the same
+  cooldown: {
+    // cooldown time in seconds
+    seconds: 5,
+    // cooldown time in milliseconds
+    milliseconds: 5000,
+  },
 };
 
 // * Strava Service Configuration

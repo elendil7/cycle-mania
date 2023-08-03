@@ -83,6 +83,7 @@ pnpm run pm2:log
 - [x] [03.08.2023] [v1.1.1] MongoDB migration update
   - Migrated local storage.json & activities.json to remote mongoDB cluster, to avoid the problem of local .jsons being overwritten on re-building of app (on such services as Heroku / Railway)
   - Beautified the leaderboard, club, and club activity embeds.
+  - Implemented command cooldowns (can be set in config.ts)
   - Other miscellaneous improvements to project structure.
 - [x] [01.08.2023] [v1.1.0] Cron job update
   - Added cron jobs for:
