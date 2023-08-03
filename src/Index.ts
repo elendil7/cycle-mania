@@ -7,15 +7,12 @@ import PuppeteerService from "./Services/PuppeteerService";
 import StravaService from "./Services/StravaService";
 import DiscordService from "./Services/DiscordService";
 import { LineBreak, Symbols } from "./Utils/constants";
-import {
-  scheduleActivitiesJob,
-  scheduleLeaderboardJob,
-} from "./Jobs/StravaCronJobs";
-import { sleep } from "./Utils/sleep";
-import { Events } from "discord.js";
-import { config_CRONJOB } from "../config";
+import MongoService from "./Services/MongoService";
+import CronJobService from "./Services/CronJobService";
 
 // variables
+let cronJobService: CronJobService;
+let mongoService: MongoService;
 let puppeteerService: PuppeteerService;
 let stravaService: StravaService;
 let discordService: DiscordService;
@@ -27,6 +24,10 @@ function startServices() {
   console.log(LineBreak);
 
   // * Start each Service, sequentially
+  mongoService = new MongoService();
+  console.log(`${Symbols.SUCCESS} Started MongoService.`);
+  cronJobService = new CronJobService();
+  console.log(`${Symbols.SUCCESS} Started CronJobService.`);
   puppeteerService = new PuppeteerService();
   console.log(`${Symbols.SUCCESS} Started PuppeteerService.`);
   stravaService = new StravaService();
@@ -43,6 +44,13 @@ async function initializeServices() {
   );
   console.log(LineBreak);
 
+  // * MongoService
+  await mongoService.init(); // initialize the service (connect to DB)
+
+  // * CronJobService
+  await cronJobService.init(); // initialize the service (import all jobs)
+  await cronJobService.startAll(); // initialize the service (start all jobs)
+
   // * StravaService
   await stravaService.init(); // initialize the service
   await stravaService.attemptPing(); // attempt ping to strava
@@ -55,33 +63,18 @@ async function initializeServices() {
   await discordService.startBot(); // start discord bot
 
   console.log(LineBreak);
-
-  // start cron jobs
-  startCronJobs();
 }
-
-async function startCronJobs() {
-  // on discord bot ready
-  discordService.discordbot.once(Events.ClientReady, () => {
-    // if leaderboard cron job is enabled, start it
-    if (config_CRONJOB.enabled.leaderboard) {
-      scheduleLeaderboardJob.fireOnTick();
-      scheduleLeaderboardJob.start();
-    }
-
-    // if activities cron job is enabled, start it
-    if (config_CRONJOB.enabled.activities) {
-      scheduleActivitiesJob.fireOnTick();
-      scheduleActivitiesJob.start();
-    }
-  });
-}
-
 // start services
 startServices();
 
 // export certain services as singletons (for use in other files, before services are initialized)
-export { puppeteerService, stravaService, discordService };
+export {
+  cronJobService,
+  puppeteerService,
+  stravaService,
+  discordService,
+  mongoService,
+};
 
 // initialize services
 initializeServices();
