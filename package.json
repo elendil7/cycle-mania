@@ -28,6 +28,7 @@
     "cron": "^2.4.0",
     "discord.js": "^14.11.0",
     "dotenv": "^16.3.1",
+    "mongoose": "^7.4.1",
     "node-html-parser": "^6.1.5",
     "pm2": "^5.3.0",
     "puppeteer": "^20.8.2",
