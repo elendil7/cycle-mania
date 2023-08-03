@@ -7,6 +7,7 @@ import {
   scheduleActivitiesJob,
   scheduleLeaderboardJob,
 } from "../Jobs/StravaCronJobs";
+import { Symbols } from "../Utils/constants";
 
 export default class CronJobService {
   private _jobs: Map<string, CronJob>;
@@ -25,6 +26,16 @@ export default class CronJobService {
   }
 
   public async init() {
+    console.log(`${Symbols.HOURGLASS} Importing cronjobs...`);
+    await this.importJobs();
+    console.log(`${Symbols.SUCCESS} Imported cronjobs.`);
+
+    console.log(`${Symbols.HOURGLASS} Starting all cronjobs...`);
+    await this.startAll();
+    console.log(`${Symbols.SUCCESS} All cronjobs started.`);
+  }
+
+  public async importJobs() {
     // * import all job exports from each file from the src\Jobs\ directory, dynamically
 
     // get all files from the src\Jobs\ directory
@@ -37,7 +48,7 @@ export default class CronJobService {
       return file === `${fileName}.js` || file === `${fileName}.ts`;
     });
 
-    console.log(jobFiles);
+    // console.log(jobFiles);
 
     // iterate through each file
     for (let jobFile of jobFiles) {
@@ -73,7 +84,7 @@ export default class CronJobService {
     discordService.discordbot.once(Events.ClientReady, () => {
       // start all jobs
       this._jobs.forEach((job) => {
-        job.fireOnTick(); // fire on tick immediately
+        // job.fireOnTick(); // fire on tick immediately
         job.start(); // start job
       });
     });
