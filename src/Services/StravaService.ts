@@ -13,7 +13,6 @@ import { Browser } from "puppeteer";
 import { request } from "undici";
 import { getUnixTimestamp } from "../Utils/timeConversions";
 import { puppeteerService } from "../Index";
-import parse from "node-html-parser";
 import RichClubActivities from "../API/Strava/v3/models/Custom/RichClubActivities";
 
 export default class StravaService {
@@ -67,47 +66,8 @@ export default class StravaService {
 
   public async init() {
     // * load strava config
-    console.log(`${Symbols.HOURGLASS} Loading Strava config...`);
-
-    // get the storage path from the strava config
-    const storagePath = this.stravaConfig.path.storage;
-
-    // Check if the storage.json file exists
-    const fileExists = existsSync(storagePath);
-
-    // If the file doesn't exist, create the directory structure and the file
-    if (!fileExists) {
-      // Get the directory path from the storage path
-      const directoryPath = dirname(storagePath);
-
-      // Create the directory structure recursively
-      mkdirSync(directoryPath, { recursive: true });
-
-      // Create the storage.json file, with "0" as the expires_at field, and the access and refresh tokens from the .env file
-      // (these fields will be updated later accordingly when the access token needs to be refreshed)
-      writeFileSync(
-        storagePath,
-        JSON.stringify({
-          expires_at: 0,
-          access_token: getEnv("STRAVA_ACCESS_TOKEN"),
-          refresh_token: getEnv("STRAVA_REFRESH_TOKEN"),
-        }),
-        "utf8",
-      );
-
-      // load access token into the strava service's memory
-      this.accessToken = getEnv("STRAVA_ACCESS_TOKEN");
-    }
-    // if file exists, read the file and load the access token into the strava service's memory
-    else {
-      const storage: StorageSchema = JSON.parse(
-        readFileSync(storagePath, "utf8"),
-      );
-      this.accessToken = storage.access_token;
-    }
-
-    console.log(`${Symbols.SUCCESS} Loaded!`);
-
+    /*     console.log(`${Symbols.HOURGLASS} Loading Strava config...`);
+    console.log(`${Symbols.SUCCESS} Loaded!`); */
     /*     console.log(`${Symbols.HOURGLASS} Launching StravaService browser...`);
 
     // launch puppeteer browser

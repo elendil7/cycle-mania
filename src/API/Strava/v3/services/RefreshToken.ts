@@ -1,25 +1,14 @@
 import axios from "axios";
 import { stravaService } from "../../../../Index";
-import getEnv from "../../../../Utils/getEnv";
 import TokenRequest from "../models/Custom/TokenRequest";
 import TokenResponse from "../models/Custom/TokenResponse";
-import { readFileSync, writeFileSync } from "fs";
 import { Symbols } from "../../../../Utils/constants";
 import { sleep } from "../../../../Utils/sleep";
-import StorageSchema from "../models/Custom/StorageSchema";
-
-// restore storage.json file if deleted / doesn't exist
-function restoreStorage(): void {
-  // write a new storage.json file
-  writeFileSync(
-    stravaService.stravaConfig.path.storage,
-    JSON.stringify({
-      expires_at: 0,
-      access_token: getEnv("STRAVA_ACCESS_TOKEN"),
-      refresh_token: getEnv("STRAVA_REFRESH_TOKEN"),
-    }),
-  );
-}
+import {
+  createTokenStorage,
+  getTokenStorage,
+  updateTokenStorage,
+} from "../../../../Mongo/data/TokenStorageRepository";
 
 // checks if auth token is expired or not
 function isExpired(expiresAt: number): boolean {
@@ -33,22 +22,20 @@ function isExpired(expiresAt: number): boolean {
 
 // export the main refresh token function
 export default async function refreshToken(count: number): Promise<number> {
-  // define variable to hold the storage.json file
-  let storage: StorageSchema;
+  // define variable to hold the mongo storage document
+  // get the Mongo document from the collection
+  // if the document in the collection (on Mongo) doesn't exist, create it
+  let storage = (await getTokenStorage()) || (await createTokenStorage());
 
-  // get the storage.json file
-  try {
-    storage = JSON.parse(
-      readFileSync(stravaService.stravaConfig.path.storage).toString(),
-    );
-  } catch (e) {
-    // if the storage.json file doesn't exist, restore it
-    restoreStorage();
-    return await refreshToken(count);
-  }
+  // if the storage document doesn't exist, return 500
+  if (!storage) return 500;
 
   // if the access token is not expired, return (no need to refresh)
-  if (!isExpired(storage.expires_at)) return 200;
+  if (!isExpired(storage.expires_at)) {
+    // write stravaService access token to the private field (super edge case)
+    stravaService.accessToken = storage.access_token;
+    return 200;
+  }
 
   // if the function has been called more than 5 times, throw an error
   if (count > 5) {
@@ -62,7 +49,7 @@ export default async function refreshToken(count: number): Promise<number> {
     `${Symbols.DUCK} Refreshing Strava Tokens (attempt #${count})...`,
   );
 
-  // construct token request object, leveraging data from the storage.json and strava config files
+  // construct token request object, leveraging data from mongo tokenstorage and strava config files
   const tokenRequest: TokenRequest = {
     client_id: parseInt(stravaService.authConfig.client_id),
     client_secret: stravaService.authConfig.client_secret,
@@ -87,15 +74,12 @@ export default async function refreshToken(count: number): Promise<number> {
       // essentially, the expires_at field is set to 5 minutes before the actual expiration time, so that the token is refreshed before it has the chance to expire (in case a discord command related to strava is run within that 5 minute window)
       const leeway = 300; // 5 minute leeway
 
-      // write the new access token & refresh token & expires_at field to the storage.json file
-      writeFileSync(
-        stravaService.stravaConfig.path.storage,
-        JSON.stringify({
-          expires_at: expires_at - leeway,
-          access_token: access_token,
-          refresh_token: refresh_token,
-        }),
-      );
+      // update the mongo storage document with new token data
+      await updateTokenStorage({
+        expires_at: expires_at - leeway,
+        access_token: access_token,
+        refresh_token: refresh_token,
+      });
 
       // update the access token in the strava service's memory
       stravaService.accessToken = access_token;

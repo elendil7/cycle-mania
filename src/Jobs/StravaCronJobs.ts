@@ -5,17 +5,20 @@ import { config_CRONJOB, config_DISCORDBOT, config_STRAVA } from "../../config";
 import { ChannelType } from "discord.js";
 import { ClubActivitiesEmbed } from "../Discord/Embeds/Strava/ClubActivitiesEmbed";
 import { sleep } from "../Utils/sleep";
-import {
-  appendFileSync,
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  writeFileSync,
-} from "fs";
+import { existsSync, readFileSync, writeFileSync } from "fs";
 import { LeaderboardEmbed } from "../Discord/Commands/🚴‍♀️ Strava/Leaderboard/LeaderboardEmbeds";
-import RichClubActivities, {
-  ClubActivity,
-} from "../API/Strava/v3/models/Custom/RichClubActivities";
+import { ClubActivity } from "../API/Strava/v3/models/Custom/RichClubActivities";
+import getEnv from "../Utils/getEnv";
+import {
+  createTokenStorage,
+  getTokenStorage,
+} from "../Mongo/data/TokenStorageRepository";
+import {
+  createClubActivityIDs,
+  getClubActivityIDs,
+  updateClubActivityIDs,
+} from "../Mongo/data/ClubActivityIDsRepository";
+import StravaClubActivityIDsModel from "../Mongo/models/StravaClubActivityIDs";
 
 // schedule leaderboard job
 export const scheduleLeaderboardJob = new CronJob(
@@ -24,7 +27,7 @@ export const scheduleLeaderboardJob = new CronJob(
     try {
       // get leaderboard channel
       const channel = discordService.discordbot.channels.cache.get(
-        config_DISCORDBOT.channelIDs.leaderboard,
+        getEnv("DISCORD_CHANNEL_LEADERBOARD_ID"),
       );
 
       // edge case handling (improper config)
@@ -71,7 +74,7 @@ export const scheduleActivitiesJob = new CronJob(
     try {
       // get the channel to send the activities to
       const channel = discordService.discordbot.channels.cache.get(
-        config_DISCORDBOT.channelIDs.activities,
+        getEnv("DISCORD_CHANNEL_ACTIVITIES_ID"),
       );
 
       // edge case handling (improper config)
@@ -90,43 +93,33 @@ export const scheduleActivitiesJob = new CronJob(
 
       if (!activities) return console.error("No activities retrieved.");
 
-      // extract the ClubActivity[] array from the response, reverse it
-      let newActivities: ClubActivity[] = activities.entries.reverse();
+      // * Ensure duplicate activities are not sent (i.e. activities that have already been sent in past cron job runs)
+      // extract the ClubActivity[] array from the response. Index 0 = most recent activity, index 19 (20th) = oldest activity
+      let newActivities: ClubActivity[] = activities.entries;
 
-      // * Ensure duplicate activities are not sent
-      // get path from config
-      const path = config_STRAVA.path.activities;
+      // get / create the ClubActivityIDs document if it doesn't exist
+      let oldActivityIDsDocument =
+        (await getClubActivityIDs()) || (await createClubActivityIDs());
 
-      // create the activities.json file if it doesn't exist
-      if (!existsSync(path)) {
-        writeFileSync(path, JSON.stringify(newActivities));
-      }
-      // otherwise, if activities already exist, filter out duplicates
-      else {
-        // read the activities.json file
-        const oldActivities: ClubActivity[] = JSON.parse(
-          readFileSync(path, "utf-8"),
-        );
+      // extract new activity IDs from the newActivities array
+      const newActivityIDs = newActivities.map((entry) => entry.activity.id);
+      // write the new activity IDs to mongodb (this step is performed after fetching the old IDs from mongo, to ensure that the new IDs are not overwritten)
+      await updateClubActivityIDs({
+        activityIDs: newActivityIDs,
+      } as StravaClubActivityIDsModel);
 
-        // filter out activities that are already in the file
-        for (let i = 0; i < newActivities.length; i++) {
-          for (let j = 0; j < oldActivities.length; j++) {
-            if (oldActivities[j].activity.id === newActivities[i].activity.id) {
-              // remove the activity from the newActivities array, as its already been sent in a previous cron job
-              newActivities.splice(i, 1);
-            }
-          }
-        }
+      // extract the oldActivityIDs from the document
+      const oldActivityIDs = oldActivityIDsDocument
+        ? oldActivityIDsDocument.activityIDs
+        : [];
 
-        // append the new activities to the activities.json file
-        writeFileSync(
-          path,
-          JSON.stringify([...new Set([...oldActivities, ...newActivities])]),
-        );
-      }
+      // remove any newActivities from the newActivities array that have already been sent, using the oldActivityIDs
+      newActivities = newActivities.filter(
+        (entry) => !oldActivityIDs.includes(entry.activity.id),
+      );
 
       // send each activity to the channel, constructing an embed for each
-      for (let i = 0; i < newActivities.length; i++) {
+      for (let i = newActivities.length - 1; i >= 0; i--) {
         // wait 2 seconds between sending each activity
         await sleep(2);
         // send the embed
