@@ -48,8 +48,7 @@ async function initializeServices() {
   await mongoService.init(); // initialize the service (connect to DB)
 
   // * CronJobService
-  await cronJobService.init(); // initialize the service (import all jobs)
-  await cronJobService.startAll(); // initialize the service (start all jobs)
+  await cronJobService.init(); // initialize the service (import all jobs & start them)
 
   // * StravaService
   await stravaService.init(); // initialize the service
