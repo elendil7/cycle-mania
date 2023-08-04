@@ -141,6 +141,23 @@ pnpm run pm2:log
   - Configure Command handler for slash commands
   - Add environmental variables
 
+## 💖 Special Thanks
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/pedrofsantoscom/">
+        <img width=100px src="https://avatars.githubusercontent.com/u/2325978?v=4" alt="Pedro Santos" />
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/pedrofsantoscom/">Pedro Santos</a>
+    </td>
+  </tr>
+</table>
+
 ## 🖼️ Gallery
 
 ### Icons
