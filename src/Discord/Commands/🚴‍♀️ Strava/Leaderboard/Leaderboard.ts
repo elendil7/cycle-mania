@@ -9,24 +9,34 @@ import {
 import DiscordBot from "../../../Structures/DiscordBot";
 import SlashCommand from "../../../Structures/Command";
 import {
+  EmptyLeaderboardEmbed,
   FailedToFetchLeaderboardEmbed,
   FetchingLeaderboardEmbed,
   LeaderboardEmbed,
 } from "./LeaderboardEmbeds";
 import { stravaService } from "../../../../Index";
 import { config_STRAVA } from "../../../../../config";
+import { InvalidClubEmbed } from "../Club/ClubEmbeds";
 
 const Leaderboard: SlashCommand = {
   data: new SlashCommandBuilder()
     .setName("leaderboard")
     .setDescription("Shows the strava leaderboard for the Cycle Mania club.")
-    .addNumberOption((option) =>
+    .addIntegerOption((option) =>
       option
         .setName("clubid")
         .setDescription("The ID of the club to fetch the leaderboard for.")
         .setRequired(false),
     )
-    .addNumberOption((option) =>
+    .addStringOption((option) =>
+      option
+        .setName("clubname")
+        .setDescription("The name of the club to fetch the leaderboard for.")
+        .setRequired(false)
+        .setMinLength(1)
+        .setMaxLength(100),
+    )
+    .addIntegerOption((option) =>
       option
         .setName("offset")
         .setDescription("The offset (weeks ago) to fetch the leaderboard from.")
@@ -39,22 +49,44 @@ const Leaderboard: SlashCommand = {
     // reply with the fetching leaderboard embed
     await interaction.reply({ embeds: [await FetchingLeaderboardEmbed()] });
 
-    // get the club ID from the interaction options, or use the default club ID
-    const clubID = String(
-      interaction.options.get("clubid", false)?.value || config_STRAVA.clubID,
-    );
+    // get the club ID or name from the interaction options, or use the default club ID, by order of priority (clubID > clubName > defaultClubID)
+    const clubIDOrName = String(
+      interaction.options.get("clubid", false)?.value ||
+        interaction.options.get("clubname", false)?.value ||
+        config_STRAVA.clubID,
+    ).replace(/\s/g, "");
 
     // fetch club name by ID
-    const club = await stravaService.getClub(String(clubID));
+    const club = await stravaService.getClub(clubIDOrName);
+
+    if (!club)
+      return await interaction.editReply({
+        embeds: [await InvalidClubEmbed(clubIDOrName)],
+      });
 
     // get offset from interaction options, or use 0
     const offset = Number(interaction.options.get("offset", false)?.value || 0);
 
     // fetch the leaderboard page for the club in question
     const leaderboard = await stravaService.getClubLeaderboard(
-      String(clubID),
+      String(clubIDOrName),
       offset,
     );
+
+    // if there was an error fetching the leaderboard, reply with the failed to fetch leaderboard embed
+    if (!leaderboard)
+      return await interaction.editReply({
+        embeds: [await FailedToFetchLeaderboardEmbed(clubIDOrName)],
+      });
+
+    // if leaderboard is empty, reply with the empty leaderboard embed
+    if (leaderboard.length === 0)
+      return await interaction.editReply({
+        embeds: [await EmptyLeaderboardEmbed(clubIDOrName)],
+      });
+
+    // get leaderboard embed
+    const leaderboardEmbed = await LeaderboardEmbed(club, leaderboard, offset);
 
     // make button for metric <=> imperial measurement toggle
     const measurementToggle = new ButtonBuilder()
@@ -67,15 +99,6 @@ const Leaderboard: SlashCommand = {
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
       measurementToggle,
     );
-
-    // if there was an error fetching the leaderboard, reply with the failed to fetch leaderboard embed
-    if (!leaderboard)
-      return await interaction.editReply({
-        embeds: [await FailedToFetchLeaderboardEmbed()],
-      });
-
-    // get leaderboard embed
-    const leaderboardEmbed = await LeaderboardEmbed(club, leaderboard, offset);
 
     // edit reply to include the leaderboard embed and the button row, and store it in the "response" variable.
     let response = await interaction.editReply({

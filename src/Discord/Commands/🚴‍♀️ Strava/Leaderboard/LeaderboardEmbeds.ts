@@ -6,6 +6,7 @@ import {
   formatSecondsToHHMM,
   getStartOfWeekFromOffset,
 } from "../../../../Utils/timeConversions";
+import { stravaAvatarResolver } from "../../../../API/Strava/v3/helpers/stravaAvatarResolver";
 
 export async function FetchingLeaderboardEmbed() {
   let embed = new EmbedBuilder()
@@ -15,11 +16,21 @@ export async function FetchingLeaderboardEmbed() {
   return embed;
 }
 
-export async function FailedToFetchLeaderboardEmbed() {
+export async function FailedToFetchLeaderboardEmbed(clubIDOrName: string) {
   let embed = new EmbedBuilder()
     .setTitle(`${Symbols.ERROR} Failed to fetch leaderboard`)
     .setDescription(
-      "There was an error fetching the leaderboard. Please try again later.",
+      `There was an error fetching the leaderboard, from club of identifier ${"`"}${clubIDOrName}${"`"}. Please try again later.`,
+    );
+
+  return embed;
+}
+
+export async function EmptyLeaderboardEmbed(clubIdentifier: string) {
+  let embed = new EmbedBuilder()
+    .setTitle(`${Symbols.ERROR} No leaderboard available`)
+    .setDescription(
+      `There is no leaderboard available for the club of identifier ${"`"}${clubIdentifier}${"`"}.\nThis is due to the fact that the club has no members, or that no members have ridden in the past week.`,
     );
 
   return embed;
@@ -30,6 +41,9 @@ export async function LeaderboardEmbed(
   leaderboard: LeaderboardAthlete[],
   offset: number,
 ) {
+  const imageLarge = stravaAvatarResolver(club.profile);
+  const imageMedium = stravaAvatarResolver(club.profile_medium);
+
   // sort by rank
   leaderboard.sort((a, b) => a.rank - b.rank);
 
@@ -39,7 +53,7 @@ export async function LeaderboardEmbed(
   let embed = new EmbedBuilder()
     .setTitle(`${Symbols.STAR} ${club.name}'s Leaderboard ${Symbols.STAR}`)
     .setURL(`https://www.strava.com/clubs/${club.id}`)
-    .setThumbnail(club.profile)
+    .setThumbnail(imageLarge)
     .setDescription(
       `${Symbols.TROPHY} **Top Athlete**: ${topAthlete.athlete_firstname} ${
         topAthlete.athlete_lastname
@@ -51,7 +65,7 @@ export async function LeaderboardEmbed(
     )
     .setFooter({
       text: `Offset 0 = this week, offset 1 = last week`,
-      iconURL: club.profile_medium,
+      iconURL: imageMedium,
     })
     .setTimestamp()
     .setColor(Colors.Orange);
