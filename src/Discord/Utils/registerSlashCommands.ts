@@ -49,14 +49,18 @@ export default async function registerSlashCommands(
 
       // also (silently) delete all commands from all guilds
       for (let i = 0; i < totalGuilds; ++i) {
-        const guildID = config_DISCORDBOT.guildIDs[i];
+        try {
+          const guildID = config_DISCORDBOT.guildIDs[i];
 
-        await rest.put(
-          Routes.applicationGuildCommands(getEnv("DISCORD_BOT_ID"), guildID),
-          {
-            body: [],
-          },
-        );
+          await rest.put(
+            Routes.applicationGuildCommands(getEnv("DISCORD_BOT_ID"), guildID),
+            {
+              body: [],
+            },
+          );
+        } catch (e) {
+          console.error(e);
+        }
       }
     }
     // * otherwise (if in dev), deploy slash commands to each guild
@@ -66,15 +70,19 @@ export default async function registerSlashCommands(
       );
 
       for (let i = 0; i < totalGuilds; ++i) {
-        const guildID = config_DISCORDBOT.guildIDs[i];
+        try {
+          const guildID = config_DISCORDBOT.guildIDs[i];
 
-        // The put method is used to fully refresh all commands in the guild with the current set
-        await rest.put(
-          Routes.applicationGuildCommands(getEnv("DISCORD_BOT_ID"), guildID),
-          {
-            body: commandsInJSON,
-          },
-        );
+          // The put method is used to fully refresh all commands in the guild with the current set
+          await rest.put(
+            Routes.applicationGuildCommands(getEnv("DISCORD_BOT_ID"), guildID),
+            {
+              body: commandsInJSON,
+            },
+          );
+        } catch (e) {
+          console.log(e);
+        }
       }
 
       console.log(
