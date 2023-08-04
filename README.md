@@ -19,6 +19,21 @@
 
 ## 🚀 Setup
 
+### Fast Deploy
+
+<table border="10px">
+  <tr>
+    <td align="center">
+      <a href="https://railway.app/template/PRJXLo?referralCode=aKyFfd"><img src="https://railway.app/button.svg" alt="Deploy on Railway" /></a>
+      <p>[<em>Ready to go!</em>]</p>
+    </td>
+    <td align="center">
+      <a href="https://heroku.com/deploy"><img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy on Railway" /></a>
+      <p>[<em>Not yet implemented</em>]</p>
+    </td>
+  </tr>
+</table>
+
 ### Prerequisites
 > Download & install the following:
 1. <a href="https://nodejs.org/en">Node (version 17.9.1 or higher)</a>
