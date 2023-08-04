@@ -1,6 +1,6 @@
 {
   "name": "cycle-mania",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A custom bot built for the Cycle Mania community, to communicate with Strava and do other cool things.",
   "main": "./src/Index.ts",
   "scripts": {

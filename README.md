@@ -46,7 +46,7 @@ DISCORD_BOT_OWNER_ID=000000000000000000
 
 > **Step #5**: [Not mandatory] At project root, fill in config.ts with your Discord server & Strava club info, and configure additional options to as per your preference. E.g.;
 ```json
-clubID: 0000000
+"clubID": "0000000"
 ```
 
 > **Step #6**: Build the application
@@ -80,10 +80,15 @@ pnpm run pm2:log
 <em>Order: (Newest => Oldest)</em>
 
 - [] [] []
+- [x] [04.08.2023] [v1.1.2] Luxury update
+  - Implemented command cooldowns (interval may be set in config.ts).
+  - Added polymorphism in existing StravaService methods - to accommodate flexibility when executing discord commands. Users can now search for clubs / club leaderboards by both:
+    - Club ID
+    - Club Name
+  - Invoked the use of additional embeds for debugging / critical bug reporting purposes.
 - [x] [03.08.2023] [v1.1.1] MongoDB migration update
   - Migrated local storage.json & activities.json to remote mongoDB cluster, to avoid the problem of local .jsons being overwritten on re-building of app (on such services as Heroku / Railway)
   - Beautified the leaderboard, club, and club activity embeds.
-  - Implemented command cooldowns (can be set in config.ts)
   - Other miscellaneous improvements to project structure.
 - [x] [01.08.2023] [v1.1.0] Cron job update
   - Added cron jobs for:
