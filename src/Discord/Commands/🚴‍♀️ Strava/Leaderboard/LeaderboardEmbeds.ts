@@ -98,7 +98,7 @@ export async function LeaderboardEmbed(
 
   // if there are more than 10 athletes on LB, add a field stating that there are more athletes
 
-  if (leaderboard.length >= totalAthletesToDisplay) {
+  if (leaderboard.length > totalAthletesToDisplay) {
     embed.addFields({
       name: `${Symbols.ATHLETE} More athletes...`,
       value: `There are ${
