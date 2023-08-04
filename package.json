@@ -5,6 +5,8 @@
   "main": "./src/Index.ts",
   "scripts": {
     "nodemon": "nodemon ./src/Index.ts --watch ./src",
+    "build:dev": "tsc && pnpm run copy-env",
+    "copy-env": "copy .env dist\\.env",
     "build": "tsc",
     "start": "node ./dist/src/Index.js",
     "pm2:start": "pm2 start ./dist/src/Index.js --name cycle-mania",
