@@ -12,7 +12,10 @@
 ## ⚡️ Features
 
 - Dynamic slash commands that can be executed on Discord, for an aesthetic user experience.
-- Ability to fetch data from Strava API and visualize it (via a discord embed).
+- Ability to fetch data from Strava API and visualize it (via a discord embed). Current implemented Strava commands:
+  - Club command
+  - Leaderboard command
+- Cron job that automatically sends new activities from your Strava club to a specified Discord channel (with any interval of time you choose; i.e., 1 hour, 4 hours, 1 day).
 
 ## 🚀 Setup
 
@@ -79,7 +82,19 @@ pnpm run pm2:log
 
 <em>Order: (Newest => Oldest)</em>
 
-- [] [] []
+- [] [] [] 
+- [] [] [] Command that enables / disbales a discord slash command.
+- [] [] [] Command that enables / disables cron job, by name.
+- [] [] [] Command that you can set reminders with (e.g., remind me to do x in 1 hour).
+- [] [] [] Integration to link user's discord account to their Strava account.
+  - Command to fetch a user's Strava profile by discord mention / ID.
+  - Leaderboard roles (e.g., gold, silver, bronze) based on strava club leaderboard. Must complete {Discord account => Strava account} integration first for this to be possible.
+- [] [] [] Command to fetch a specific strava activity by ID.
+- [] [] [] Command to fetch a user's Strava profile by name or ID.
+  - Include user's statistics (i.e., total distance, total time, etc).
+  - Include recent activities (i.e., last 5 activities).
+- [] [] [] Auto strava cookie refresh, using browser emulation (puppeteer).
+- [] [] [] Migrate hosting from Railway.app to Google's Firebase, to promote scalability & reliability.
 - [x] [04.08.2023] [v1.1.2] Luxury update
   - Implemented command cooldowns (interval may be set in config.ts).
   - Added polymorphism in existing StravaService methods - to accommodate flexibility when executing discord commands. Users can now search for clubs / club leaderboards by both:
@@ -128,5 +143,42 @@ pnpm run pm2:log
 
 ## 🖼️ Gallery
 
-<img width="49%" align="left" src="./public/icon/server-icon-emoji-512.png" alt="Server Icon">
-<img width="49%" align="right" src="./public/icon/server-icon-manic-1024.png" alt="Server Icon (Manic edition)">
+### Icons
+
+<table>
+  <tr>
+    <td width=50% align="center">
+      <img src="./public/icon/server-icon-emoji-512.png" alt="Server Icon">
+      <p>Regular Cycle Mania icon</p>
+    </td>
+    <td width=50% align="center">
+      <img src="./public/icon/server-icon-manic-1024.png" alt="Server Icon (Manic edition)">
+      <p>"Manic" Cycle Mania icon</p>
+    </td>
+  </tr>
+</table>
+
+### Command showcase
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="./public/showcase/clubCmd_1.gif" alt="Club command showcase #1">
+      <p>Club command showcase #1</p>
+    </td>
+    <td align="center">
+      <img src="./public/showcase/clubCmd_2.gif" alt="Club command showcase #2">
+      <p>Club command showcase #2</p>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./public/showcase/leaderboardCmd_1.gif" alt="Leaderboard command showcase #1">
+      <p>Leaderboard command showcase #1</p>
+    </td>
+    <td align="center">
+      <img src="./public/showcase/leaderboardCmd_2.gif" alt="Leaderboard command showcase #2">
+      <p>Leaderboard command showcase #2</p>
+    </td>
+  </tr>
+</table>
