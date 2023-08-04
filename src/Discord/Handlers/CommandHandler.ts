@@ -1,7 +1,10 @@
 import { Interaction } from "discord.js";
 import DiscordBot from "../Structures/DiscordBot";
 import { IsUserBeingCooledDown } from "./CooldownHandler";
-import { YouAreOnCooldownEmbed } from "../Embeds/Reusable/ErrorEmbeds";
+import {
+  CriticalBugEmbed,
+  YouAreOnCooldownEmbed,
+} from "../Embeds/Reusable/ErrorEmbeds";
 
 export default async function CommandHandler(
   client: DiscordBot,
@@ -45,12 +48,12 @@ export default async function CommandHandler(
     console.error(error);
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
-        content: "There was an error while executing this command!",
+        embeds: [CriticalBugEmbed()],
         ephemeral: false,
       });
     } else {
       await interaction.reply({
-        content: "There was an error while executing this command!",
+        embeds: [CriticalBugEmbed()],
         ephemeral: false,
       });
     }
