@@ -61,3 +61,14 @@ export const config_CRONJOB = {
     activities: "0 * * * *",
   },
 };
+
+// * Misc Configuration
+export const config_MISC = {
+  // github issues url
+  url: {
+    github: {
+      repo: "https://github.com/elendil7/Cycle-Mania",
+      issues: "https://github.com/elendil7/Cycle-Mania/issues/new",
+    },
+  },
+};

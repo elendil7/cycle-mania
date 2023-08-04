@@ -2,13 +2,10 @@ import { config_STRAVA } from "../../config";
 import axios from "axios";
 import { Symbols } from "../Utils/constants";
 import getEnv from "../Utils/getEnv";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
-import { dirname } from "path";
 import RefreshTokenDecorator from "../API/Strava/v3/decorators/RefreshTokenDecorator";
 import Club from "../API/Strava/v3/models/Club";
 import LeaderboardAthlete from "../API/Strava/v3/models/LeaderboardAthlete";
 import AuthenticationConfig from "../API/Strava/v3/models/Custom/AuthenticationConfig";
-import StorageSchema from "../API/Strava/v3/models/Custom/StorageSchema";
 import { Browser } from "puppeteer";
 import { request } from "undici";
 import { getUnixTimestamp } from "../Utils/timeConversions";
@@ -124,25 +121,19 @@ export default class StravaService {
 
   // club
   @RefreshTokenDecorator // decorator to refresh token before calling the method
-  public async getClub(clubID: string): Promise<Club> {
+  public async getClub(clubIdentifier: string) {
     try {
       // get club at GET /clubs/{id} using axios
-      const { data, status } = await axios.get(`/clubs/${clubID}`, {
+      const { data, status } = await axios.get(`/clubs/${clubIdentifier}`, {
         baseURL: this.stravaConfig.url.base_URL,
         headers: {
           Authorization: `Bearer ${this.accessToken}`,
         },
       });
 
-      if (status === 200) {
-        return data as Club;
-      } else {
-        throw new Error(
-          `Error getting club with ID ${clubID}. Status code: ${status}`,
-        );
-      }
+      return data as Club;
     } catch (e) {
-      throw e;
+      // console.error(e);
     }
   }
 
@@ -182,11 +173,11 @@ export default class StravaService {
   }
 
   // leaderboard
-  public async getClubLeaderboard(clubID: string, weekOffset: number) {
+  public async getClubLeaderboard(clubIdentifier: string, weekOffset: number) {
     try {
       // axios sucks - can't even handle anti-CORS headers. Uncidi for the win.
       const { statusCode, body } = await request(
-        `https://www.strava.com/clubs/${clubID}/leaderboard`,
+        `https://www.strava.com/clubs/${clubIdentifier}/leaderboard`,
         {
           query: {
             week_offset: weekOffset,
@@ -199,7 +190,7 @@ export default class StravaService {
 
       return (await body.json()).data as LeaderboardAthlete[];
     } catch (e) {
-      console.error(e);
+      // console.error(e);
     }
   }
 
@@ -220,7 +211,7 @@ export default class StravaService {
 
       return (await body.json()) as RichClubActivities;
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   }
 }
