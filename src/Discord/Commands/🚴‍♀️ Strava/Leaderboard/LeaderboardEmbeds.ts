@@ -85,13 +85,15 @@ export async function LeaderboardEmbed(
           ? Symbols.BRONZE
           : Symbols.BUG
       } #${i + 1}. ${athlete.athlete_firstname} ${athlete.athlete_lastname}`,
-      value: `**Distance:** ${"`"}${(athlete.distance / 1000).toFixed(
-        2,
-      )}km${"`"}\n**Elevation Gain:** ${"`"}${Math.floor(
-        athlete.elev_gain,
-      )}m${"`"}\n**Moving Time:** ${"`"}${formatSecondsToHHMM(
-        athlete.moving_time,
-      )}${"`"}\n**Total Activities:** ${"`"}${athlete.num_activities}${"`"}`,
+      value: `**Distance:** ${"`"}${
+        (athlete.distance / 1000).toFixed(2) || 0
+      }km${"`"}\n**Elevation Gain:** ${"`"}${
+        Math.floor(athlete.elev_gain) || 0
+      }m${"`"}\n**Moving Time:** ${"`"}${
+        formatSecondsToHHMM(athlete.moving_time) || 0
+      }${"`"}\n**Total Activities:** ${"`"}${
+        athlete.num_activities || 0
+      }${"`"}`,
       inline: true,
     });
   }
