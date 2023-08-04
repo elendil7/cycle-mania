@@ -47,7 +47,7 @@ export default async function registerSlashCommands(
         `${Symbols.SUCCESS} Successfully reloaded ${totalCommands} application (/) ${ocdTotalCommands} globally.`,
       );
 
-      // also (silently) delete all commands from all guilds
+      /*       // also (silently) delete all commands from all guilds
       for (let i = 0; i < totalGuilds; ++i) {
         try {
           const guildID = config_DISCORDBOT.guildIDs[i];
@@ -61,7 +61,7 @@ export default async function registerSlashCommands(
         } catch (e) {
           console.error(e);
         }
-      }
+      } */
     }
     // * otherwise (if in dev), deploy slash commands to each guild
     else {
@@ -89,10 +89,10 @@ export default async function registerSlashCommands(
         `${Symbols.SUCCESS} Successfully reloaded ${totalCommands} application (/) ${ocdTotalCommands} in ${totalGuilds} ${ocdTotalGuilds}.`,
       );
 
-      // also (silently) delete all commands globally
+      /*       // also (silently) delete all commands globally
       await rest.put(Routes.applicationCommands(getEnv("DISCORD_BOT_ID")), {
         body: [],
-      });
+      }); */
     }
   } catch (error) {
     // And of course, make sure you catch and log any errors!
