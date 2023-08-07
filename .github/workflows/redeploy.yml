@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - main
-  
+
 jobs:
   redeploy:
     # Run on Ubuntu (Oracle server is Ubuntu / Linux)
@@ -44,10 +44,10 @@ jobs:
           key: ${{ secrets.ORACLE_SERVER_PRIVATE_KEY }}
           port: 22
           command_timeout: 20m
-          script: |           
+          script: |
             echo "** Connected to Oracle server via SSH. **"
             echo "Running deploy script..."
-            
+
             echo "Pulling changes from GitHub repo..."
             cd /home/opc
             if [ -d "cycle-mania" ]; then
@@ -75,7 +75,7 @@ jobs:
             echo "STRAVA_CLIENT_SECRET=${{ secrets.STRAVA_CLIENT_SECRET }}" >> .env
             echo "STRAVA_REFRESH_TOKEN=${{ secrets.STRAVA_REFRESH_TOKEN }}" >> .env
             echo "STRAVA_USER_COOKIE=${{ secrets.STRAVA_USER_COOKIE }}" >> .env
-            echo "Environmental secrets copied from GitHub repo to Oracle server
+            echo "Environmental secrets copied from GitHub repo to Oracle server"
 
             echo "Building new Docker image..."
             sudo docker build --tag cycle-mania:${{ github.sha }} .
@@ -100,7 +100,7 @@ jobs:
 
             echo "Deployment successful."
             exit 0
-            
+
       # Send message to Discord channel to confirm deployment
       - name: Discord Message Notify
         uses: appleboy/discord-action@0.0.3
@@ -114,6 +114,6 @@ jobs:
             - Commit: `${{ github.sha }}`
             - Branch: `${{ github.ref }}`
             - Event: `${{ github.event_name }}`
-            - 
+            -
           color: 43520
           avatar_url: https://images-ext-1.discordapp.net/external/fdSG9WottHrn1cVRMO0RQC5t0hvwHVKtgYpTJWJjk6s/https/cdn-icons-png.flaticon.com/512/190/190411.png
