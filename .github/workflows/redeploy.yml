@@ -58,7 +58,7 @@ jobs:
             echo "Changes pulled from GitHub repo."
 
             echo "Running deploy script..."
-            ssh ${{ secrets.ORACLE_SERVER_USERNAME }}@${{ secrets.ORACLE_SERVER_HOST }} 'bash -s' < deploy/deploy.sh
+            ssh ${{ secrets.ORACLE_SERVER_USERNAME }}@${{ secrets.ORACLE_SERVER_HOST }} 'bash -s' < ./deploy/deploy.sh
           
       # Send message to Discord channel to confirm deployment
       - name: Discord Message Notify
