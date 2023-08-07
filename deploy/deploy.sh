@@ -1,14 +1,3 @@
-echo "** Connected to Oracle server via SSH. **"
-echo "Pulling changes from GitHub repo..."
-cd /home/opc
-if [ -d "cycle-mania" ]; then
-  cd cycle-mania
-  git pull
-else
-  git clone
-fi
-echo "Changes pulled from GitHub repo."
-
 echo "Copying environmental secrets from GitHub repo to Oracle server..."
 echo "" > .env
 echo "DISCORD_BOT_ID=${{ secrets.DISCORD_BOT_ID }}" >> .env

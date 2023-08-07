@@ -43,8 +43,21 @@ jobs:
           username: ${{ secrets.ORACLE_SERVER_USERNAME }}
           key: ${{ secrets.ORACLE_SERVER_PRIVATE_KEY }}
           port: 22
-          script: ssh ${{ secrets.ORACLE_SERVER_USERNAME }}@${{ secrets.ORACLE_SERVER_HOST }} 'bash -s' < deploy/deploy.sh
           command_timeout: 20m
+          script: |           
+            echo "** Connected to Oracle server via SSH. **"
+            echo "Pulling changes from GitHub repo..."
+            cd /home/opc
+            if [ -d "cycle-mania" ]; then
+              cd cycle-mania
+              git pull
+            else
+              git clone
+            fi
+            echo "Changes pulled from GitHub repo."
+
+            echo "Running deploy script..."
+            ssh ${{ secrets.ORACLE_SERVER_USERNAME }}@${{ secrets.ORACLE_SERVER_HOST }} 'bash -s' < deploy/deploy.sh
           
       # Send message to Discord channel to confirm deployment
       - name: Discord Message Notify
