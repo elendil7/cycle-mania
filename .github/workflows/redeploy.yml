@@ -10,6 +10,8 @@ jobs:
   redeploy:
     # Run on Ubuntu (Oracle server is Ubuntu / Linux)
     runs-on: ubuntu-latest
+    # Accommodate the retrieval of environmental secrets that are only available in prod environment
+    environment: prod
 
     # Pull changes from GitHub repo to Oracle server, and set variable to "true" if changes are detected
     steps:
