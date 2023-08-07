@@ -4,27 +4,29 @@
   "description": "A custom bot built for the Cycle Mania community, to communicate with Strava and do other cool things.",
   "main": "./src/Index.ts",
   "scripts": {
-    "nodemon": "nodemon ./src/Index.ts --watch ./src",
-    "build:dev": "tsc && pnpm run copy-env",
-    "copy-env": "copy .env dist\\.env",
-    "build": "tsc",
-    "start": "node ./dist/src/Index.js",
-    "pm2:start": "pm2 start ./dist/src/Index.js --name cycle-mania",
-    "pm2:stop": "pm2 stop cycle-mania",
-    "pm2:restart": "pm2 restart cycle-mania --update-env",
-    "pm2:log": "pm2 log --lines 200"
+    "dev": "nodemon ./src/Index.ts --watch ./src",
+    "build:dev": "tsc && copy .env dist\\.env",
+    "build:docker": "docker build --tag cycle-mania .",
+    "build:prod": "tsc && cp .env ./dist/.env",
+    "start:dev": "node ./dist/src/Index.js",
+    "start:docker": "docker run -d --rm --name cycle-mania cycle-mania",
+    "stop:docker": "docker stop cycle-mania",
+    "pm2:start": "pm2-runtime start process.yml",
+    "pm2:stop": "pm2-runtime stop process.yml",
+    "pm2:restart": "pm2-runtime restart process.yml --update-env",
+    "pm2:log": "pm2-runtime log --lines 200",
+    "pm2:describe": "pm2-runtime describe cycle-mania > /dev/null"
   },
   "keywords": [],
   "author": "Vitalijs Strelcuks",
   "license": "ISC",
   "devDependencies": {
-    "@types/luxon": "^3.3.1",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.0",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
+    "ts-node": "^10.9.1"
   },
   "dependencies": {
+    "@types/luxon": "^3.3.1",
     "@types/node": "^20.4.4",
     "axios": "^1.4.0",
     "cron": "^2.4.0",
@@ -38,7 +40,9 @@
     "puppeteer-extra-plugin-adblocker": "^2.13.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "striptags": "^3.2.0",
-    "undici": "^5.22.1"
+    "typescript": "^5.1.6",
+    "undici": "^5.22.1",
+    "winston": "^3.10.0"
   },
   "prettier": "./.prettierrc.yaml"
 }
