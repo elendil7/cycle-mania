@@ -42,7 +42,7 @@ jobs:
           key: ${{ secrets.ORACLE_SERVER_PRIVATE_KEY }}
           port: 22
           script: ssh ${{ secrets.ORACLE_SERVER_USERNAME }}@${{ secrets.ORACLE_SERVER_HOST }} 'bash -s' < deploy/deploy.sh
-          command_timeout: 120 
+          command_timeout: 20m
           
       # Send message to Discord channel to confirm deployment
       - name: Discord Message Notify
