@@ -5,7 +5,7 @@
         <img width="25px" src="./public/icon/server-icon-emoji-512.png" alt="Server Icon">
     </h1>
     <p>Welcome to the repository.</p>
-    <p><em>This custom discord bot was built for the members of the <b>Cycle Mania</b> community.</em></p>
+    <p><em>This custom discord bot (in the form of a discord-strava integration) was built for the members of the <b>Cycle Mania</b> community.</em></p>
     <p><em>It boasts a plethora of useful and fun features, many of which relate to retreiving data from the <b>Strava API</b>, and display it in a prettified format in our Discord server.</em></p>
 </div>
 
@@ -109,7 +109,10 @@ pnpm run pm2:log
   - Include user's statistics (i.e., total distance, total time, etc).
   - Include recent activities (i.e., last 5 activities).
 - [] [] [] Auto strava cookie refresh, using browser emulation (puppeteer).
-- [] [] [] Migrate hosting from Railway.app to Google's Firebase, to promote scalability & reliability.
+- [x] [07.08.2023] [v1.1.5] Fat whale update
+  - Migrated from railway.app to Oracle Cloud VM.
+  - Set up a docker container workflow for the project, to run isolated from the host machine.
+  - Configured GitHub Actions to automate the build & deployment of the project.
 - [x] [04.08.2023] [v1.1.2] Luxury update
   - Implemented command cooldowns (interval may be set in config.ts).
   - Added polymorphism in existing StravaService methods - to accommodate flexibility when executing discord commands. Users can now search for clubs / club leaderboards by both:
