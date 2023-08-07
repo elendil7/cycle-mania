@@ -58,8 +58,9 @@ jobs:
             echo "Changes pulled from GitHub repo."
 
             echo "Running deploy script..."
-            ssh ${{ secrets.ORACLE_SERVER_USERNAME }}@${{ secrets.ORACLE_SERVER_HOST }} 'bash -s' < ./deploy/deploy.sh
-          
+            ./deploy/deploy.sh
+            echo "Deploy script complete."
+            
       # Send message to Discord channel to confirm deployment
       - name: Discord Message Notify
         uses: appleboy/discord-action@0.0.3
