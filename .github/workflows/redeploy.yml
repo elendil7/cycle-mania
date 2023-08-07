@@ -76,7 +76,7 @@ jobs:
       - name: Run new Docker container
         id: run
         run: |
-          docker run -d --name cycle-mania --env-file .env cycle-mania/cycle-mania:${{ github.sha }}
+          docker run -d --name cycle-mania --env-file .env cycle-mania:${{ github.sha }}
 
       # Wait for new Docker container to start
       - name: Wait for new Docker container to start
