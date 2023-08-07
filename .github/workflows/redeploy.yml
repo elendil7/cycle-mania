@@ -33,15 +33,16 @@ jobs:
         if: ${{ steps.changes.outputs.changed == 'false' }}
         run: exit 0
 
-      # Connect to Oracle server via SSH and execute commands
+      # Connect to Oracle server via SSH and execute deploy script there
       - name: Connect to Oracle server via SSH and execute commands
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.ORACLE_SERVER_HOST }}
           username: ${{ secrets.ORACLE_SERVER_USERNAME }}
           key: ${{ secrets.ORACLE_SERVER_PRIVATE_KEY }}
           port: 22
           script: ssh ${{ secrets.ORACLE_SERVER_USERNAME }}@${{ secrets.ORACLE_SERVER_HOST }} 'bash -s' < deploy/deploy.sh
+          command_timeout: 120 
           
       # Send message to Discord channel to confirm deployment
       - name: Discord Message Notify
