@@ -52,7 +52,8 @@ jobs:
               cd cycle-mania
               git pull
             else
-              git clone ${{github.repositoryUrl}}
+              git clone https://github.com/${{github.repository}}
+              cd cycle-mania
             fi
             echo "Changes pulled from GitHub repo."
 
