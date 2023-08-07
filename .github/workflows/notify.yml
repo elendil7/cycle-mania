@@ -1,0 +1,24 @@
+name: Test Discord notification on Push to Test
+
+on:
+  push:
+    branches:
+      - test
+
+jobs:
+  notify-discord:
+    runs-on: ubuntu-latest
+
+    environment: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Notify Discord
+        id: notifydiscord
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID_DOCKER }}
+          webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN_DOCKER }}
+          color: '00ff00'
