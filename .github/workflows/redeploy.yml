@@ -35,7 +35,7 @@ jobs:
 
       # Connect to Oracle server via SSH and execute deploy script there
       - name: Connect to Oracle server via SSH and execute commands
-        uses: appleboy/ssh-action@v0.1.10
+        uses: appleboy/ssh-action@v0.1.9
         with:
           host: ${{ secrets.ORACLE_SERVER_HOST }}
           username: ${{ secrets.ORACLE_SERVER_USERNAME }}
