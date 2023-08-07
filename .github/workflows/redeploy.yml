@@ -1,0 +1,126 @@
+name: Redeploy to Oracle on Push to Main
+
+# On push to main branch of repository...
+on:
+  push:
+    branches:
+      - main
+  
+jobs:
+  redeploy:
+    # Run on Ubuntu (Oracle server is Ubuntu / Linux)
+    runs-on: ubuntu-latest
+
+    # Pull changes from GitHub repo to Oracle server, and set variable to "true" if changes are detected
+    steps:
+      # Checkout code from GitHub repo
+      - name: Checkout code
+        id: checkout
+        uses: actions/checkout@v2
+
+      # Check for changes in /src folder or the config.ts file, and store result in variable
+      - name: Check for changes in /src folder or the config.ts file
+        id: changes
+        run: |
+          if [[ $(git diff --name-only HEAD^ HEAD) =~ ^src/|^\config\.ts$ ]]; then
+            echo "::set-output name=changed::true"
+          else
+            echo "::set-output name=changed::false"
+          fi
+
+      # Exit workflow if no changes detected
+      - name: Exit workflow if no changes
+        if: ${{ steps.changes.outputs.changed == 'false' }}
+        run: exit 0
+
+      # Copy environmental secrets from GitHub repo to Oracle server (to .env file at project root)
+      - name: Write secrets to .env file at project root
+        id: secrets
+        run: |
+          echo "" > .env
+          echo "DISCORD_BOT_ID=${{ secrets.DISCORD_BOT_ID }}" >> .env
+          echo "DISCORD_BOT_OWNER_ID=${{ secrets.DISCORD_BOT_OWNER_ID }}" >> .env
+          echo "DISCORD_BOT_TOKEN=${{ secrets.DISCORD_BOT_TOKEN }}" >> .env
+          echo "DISCORD_CHANNEL_ACTIVITIES_ID=${{ secrets.DISCORD_CHANNEL_ACTIVITIES_ID }}" >> .env
+          echo "DISCORD_CHANNEL_LEADERBOARD_ID=${{ secrets.DISCORD_CHANNEL_LEADERBOARD_ID }}" >> .env
+          echo "MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }}" >> .env
+          echo "MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> .env
+          echo "MONGO_USERNAME=${{ secrets.MONGO_USERNAME }}" >> .env
+          echo "PROD=${{ secrets.PROD }}" >> .env
+          echo "STRAVA_ACCESS_TOKEN=${{ secrets.STRAVA_ACCESS_TOKEN }}" >> .env
+          echo "STRAVA_CLIENT_ID=${{ secrets.STRAVA_CLIENT_ID }}" >> .env
+          echo "STRAVA_CLIENT_SECRET=${{ secrets.STRAVA_CLIENT_SECRET }}" >> .env
+          echo "STRAVA_REFRESH_TOKEN=${{ secrets.STRAVA_REFRESH_TOKEN }}" >> .env
+          echo "STRAVA_USER_COOKIE=${{ secrets.STRAVA_USER_COOKIE }}" >> .env
+
+      # Pull changes from GitHub repo to Oracle server
+      - name: Pull changes from GitHub repo to Oracle server
+        id: gitpull
+        run: |
+          git pull
+
+      # Build new Docker image
+      - name: Build new Docker image
+        id: build
+        run: |
+          docker build --tag cycle-mania:${{ github.sha }} .
+
+      # Push new Docker image to Docker Hub
+      - name: Push new Docker image to Docker Hub
+        id: push
+        run: |
+          docker tag cycle-mania:${{ github.sha }} cycle-mania/cycle-mania:${{ github.sha }}
+          docker push cycle-mania/cycle-mania:${{ github.sha }}
+
+      # Pull new Docker image from Docker Hub to Oracle server
+      - name: Pull new Docker image from Docker Hub to Oracle server
+        id: pull
+        run: |
+          docker pull cycle-mania/cycle-mania:${{ github.sha }}
+
+      # Stop and delete existing Docker container
+      - name: Stop and delete existing Docker container
+        id: stop
+        run: |
+          docker stop cycle-mania || true
+          docker rm cycle-mania || true
+
+      # Run new Docker container
+      - name: Run new Docker container
+        id: run
+        run: |
+          docker run -d --name cycle-mania --env-file .env cycle-mania/cycle-mania:${{ github.sha }}
+
+      # Wait for new Docker container to start
+      - name: Wait for new Docker container to start
+        id: wait
+        run: |
+          sleep 10
+
+      # Check if new Docker container is running
+      - name: Check if new Docker container is running
+        id: check
+        run: |
+          docker ps | grep cycle-mania
+
+      # Exit workflow if new Docker container is not running
+      - name: Exit workflow if new Docker container is not running
+        if: ${{ steps.check.outputs.stdout == '' }}
+        run: exit 1
+          
+      # Send message to Discord channel to confirm deployment
+      - name: Discord Message Notify
+        uses: appleboy/discord-action@0.0.3
+        with:
+          webhook_id: ${{ secrets.DOCKER_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.DOCKER_WEBHOOK_TOKEN }}
+          message: |
+            **Deployment successful**
+            *Docker image deployed to Oracle server.*
+
+            - Commit: `${{ github.sha }}`
+            - Branch: `${{ github.ref }}`
+            - Event: `${{ github.event_name }}`
+            - 
+          color: 43520
+          avatar_url: https://images-ext-1.discordapp.net/external/fdSG9WottHrn1cVRMO0RQC5t0hvwHVKtgYpTJWJjk6s/https/cdn-icons-png.flaticon.com/512/190/190411.png
