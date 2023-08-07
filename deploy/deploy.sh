@@ -1,3 +1,6 @@
+# necessary shebang for GitHub Actions to run this script
+#!/bin/bash
+
 echo "Copying environmental secrets from GitHub repo to Oracle server..."
 echo "" > .env
 echo "DISCORD_BOT_ID=${{ secrets.DISCORD_BOT_ID }}" >> .env
