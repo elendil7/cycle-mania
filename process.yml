@@ -1,0 +1,10 @@
+apps:
+  - name: 'cycle-mania'
+    script: ./dist/src/Index.js
+    error_file: './dist/system/err.log'
+    out_file: './dist/system/out.log'
+    watch: false
+    instances: 1
+    autorestart: true
+    max_memory_restart: '2G'
+    max_restarts: 10
