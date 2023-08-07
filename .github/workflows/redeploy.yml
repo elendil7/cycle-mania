@@ -58,7 +58,7 @@ jobs:
             echo "Changes pulled from GitHub repo."
 
             echo "Running deploy script..."
-            ./deploy/deploy.sh
+            sudo ./deploy/deploy.sh
             echo "Deploy script complete."
             
       # Send message to Discord channel to confirm deployment
