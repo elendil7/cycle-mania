@@ -65,19 +65,6 @@ jobs:
         run: |
           docker build --tag cycle-mania:${{ github.sha }} .
 
-      # Push new Docker image to Docker Hub
-      - name: Push new Docker image to Docker Hub
-        id: push
-        run: |
-          docker tag cycle-mania:${{ github.sha }} cycle-mania/cycle-mania:${{ github.sha }}
-          docker push cycle-mania/cycle-mania:${{ github.sha }}
-
-      # Pull new Docker image from Docker Hub to Oracle server
-      - name: Pull new Docker image from Docker Hub to Oracle server
-        id: pull
-        run: |
-          docker pull cycle-mania/cycle-mania:${{ github.sha }}
-
       # Stop and delete existing Docker container
       - name: Stop and delete existing Docker container
         id: stop
