@@ -58,7 +58,7 @@ jobs:
             echo "Changes pulled from GitHub repo."
 
             echo "Running deploy script..."
-            chmod +x deploy.sh
+            chmod +x ./deploy/deploy.sh
             ./deploy/deploy.sh
             echo "Deploy script complete."
             
