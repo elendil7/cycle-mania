@@ -1,0 +1,23 @@
+on:
+  push:
+    branches:
+      - main
+    # Only run workflow if changes are detected in specified paths / files
+    paths:
+      - src/**
+      - package.json
+      - config.ts
+      - process.yml
+      - Dockerfile
+      - .dockerignore
+      - .github/workflows/**
+      - tsconfig.json
+
+jobs:
+  printtocmd:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Print to console
+        run: |
+          echo "Hello world! This means changes were detected in the specified paths / files."
