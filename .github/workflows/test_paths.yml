@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - main
+      - test
     # Only run workflow if changes are detected in specified paths / files
     paths:
       - src/**
