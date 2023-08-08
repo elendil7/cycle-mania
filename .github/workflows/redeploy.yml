@@ -101,19 +101,16 @@ jobs:
             echo "Deployment successful."
             exit 0
 
-      # Send message to Discord channel to confirm deployment
-      # - name: Discord Message Notify
-      #   uses: appleboy/discord-action@0.0.3
-      #   with:
-      #     webhook_id: ${{ secrets.DOCKER_WEBHOOK_ID }}
-      #     webhook_token: ${{ secrets.DOCKER_WEBHOOK_TOKEN }}
-      #     message: |
-      #       **Deployment successful**
-      #       *Docker image deployed to Oracle server.*
-
-      #       - Commit: `${{ github.sha }}`
-      #       - Branch: `${{ github.ref }}`
-      #       - Event: `${{ github.event_name }}`
-      #       -
-      #     color: 43520
-      #     avatar_url: https://images-ext-1.discordapp.net/external/fdSG9WottHrn1cVRMO0RQC5t0hvwHVKtgYpTJWJjk6s/https/cdn-icons-png.flaticon.com/512/190/190411.png
+      # Send message to Discord channel to confirm successful deployment (or failure)
+      - uses: actions/setup-ruby@v1
+      - name: Send Webhook Notification
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+          WEBHOOK_URL: ${{ vars.DOCKER_WEBHOOK_TOKEN }}
+          HOOK_OS_NAME: ${{ runner.os }}
+          WORKFLOW_NAME: ${{ github.workflow }}
+        run: |
+          git clone https://github.com/elendil7/github-actions-discord-webhook webhook
+          bash webhook/send.sh $JOB_STATUS $WEBHOOK_URL
+        shell: bash
