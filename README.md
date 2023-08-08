@@ -168,10 +168,18 @@ pnpm run pm2:log
         <img width=100px src="https://avatars.githubusercontent.com/u/2325978?v=4" alt="Pedro Santos" />
       </a>
     </td>
+    <td>
+      <a href="https://github.com/jwren0/">
+        <img width=100px src="https://avatars.githubusercontent.com/u/85674414?v=4" alt="jwren0" />
+      </a>
+    </td>
   </tr>
   <tr>
     <td align="center">
       <a href="https://github.com/pedrofsantoscom/">Pedro Santos</a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/jwren0/">jwren0</a>
     </td>
   </tr>
 </table>
