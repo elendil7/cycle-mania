@@ -10,7 +10,7 @@ export const config_DISCORDBOT = {
     silver: "1130274575884746792",
     bronze: "1130274631396368506",
   },
-  // Guild IDs where slash commands should be loaded
+  // Guild IDs where slash commands should be loaded (can be ignored for prod - as slash commands are global)
   guildIDs: ["843858501839355966"],
   // ensure that both cooldown.seconds and cooldown.milliseconds are the same
   cooldown: {
@@ -18,6 +18,11 @@ export const config_DISCORDBOT = {
     seconds: 5,
     // cooldown time in milliseconds
     milliseconds: 5000,
+  },
+  // vanity stuff
+  vanity: {
+    // "Watching {botStatus}"
+    botStatus: "Gnome lose to Hexic",
   },
 };
 

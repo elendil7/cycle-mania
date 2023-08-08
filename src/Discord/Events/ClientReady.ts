@@ -1,6 +1,7 @@
 import { ActivityType, Events } from "discord.js";
 import DiscordBot from "../Structures/DiscordBot";
-import { Symbols } from "../../Utils/constants";
+import { LineBreak, Symbols } from "../../Utils/constants";
+import { config_DISCORDBOT } from "../../../config";
 
 export default {
   name: Events.ClientReady,
@@ -13,7 +14,7 @@ export default {
       status: "online",
       activities: [
         {
-          name: "Gnome lose to Hexic",
+          name: config_DISCORDBOT.vanity.botStatus,
           type: ActivityType.Watching,
           url: "https://www.youtube.com/watch?v=6n3pFFPSlW4",
         },
@@ -21,5 +22,6 @@ export default {
     });
 
     console.log(`${Symbols.CHECKMARK} Ready! Logged in as ${client.user.tag}`);
+    console.log(LineBreak);
   },
 };

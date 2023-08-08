@@ -9,7 +9,6 @@ import DiscordService from "./Services/DiscordService";
 import { LineBreak, Symbols } from "./Utils/constants";
 import MongoService from "./Services/MongoService";
 import CronJobService from "./Services/CronJobService";
-
 // variables
 let cronJobService: CronJobService;
 let mongoService: MongoService;
@@ -18,8 +17,9 @@ let stravaService: StravaService;
 let discordService: DiscordService;
 
 function startServices() {
+  console.log(LineBreak);
   console.log(
-    `\n\x1b[1m<<< ${Symbols.INFORMATION} Starting services... >>>\x1b[0m`,
+    `\x1b[1m<<< ${Symbols.INFORMATION} Starting services... >>>\x1b[0m`,
   );
   console.log(LineBreak);
 
