@@ -1,9 +1,9 @@
 name: Simulate a failing job and send a notification to Discord
 
-on:
-  push:
-    branches:
-      - test
+on: {}
+  # push:
+  #   branches:
+  #     - test
 
 jobs:
   notify-discord:
