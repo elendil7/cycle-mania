@@ -5,7 +5,17 @@ on:
   push:
     branches:
       - main
-
+    # Only run workflow if changes are detected in specified paths / files
+    paths:
+      - src/**
+      - package.json
+      - config.ts
+      - process.yml
+      - Dockerfile
+      - .dockerignore
+      - .github/workflows/**
+      - tsconfig.json
+      
 jobs:
   redeploy:
     # Run on Ubuntu (Oracle server is Ubuntu / Linux)
@@ -20,21 +30,6 @@ jobs:
         id: checkout
         uses: actions/checkout@v2
 
-      # Check for changes in /src folder or the config.ts file, and store result in variable
-      - name: Check for changes in /src folder or the config.ts file
-        id: changes
-        run: |
-          if [[ $(git diff --name-only HEAD^ HEAD) =~ ^src/|^\config\.ts$ ]]; then
-            echo "::set-output name=changed::true"
-          else
-            echo "::set-output name=changed::false"
-          fi
-
-      # Exit workflow if no changes detected
-      - name: Exit workflow if no changes
-        if: ${{ steps.changes.outputs.changed == 'false' }}
-        run: exit 0
-
       # Connect to Oracle server via SSH and execute deploy script there
       - name: Connect to Oracle server via SSH and execute commands
         uses: appleboy/ssh-action@v0.1.9
@@ -42,7 +37,7 @@ jobs:
           host: ${{ secrets.ORACLE_SERVER_HOST }}
           username: ${{ secrets.ORACLE_SERVER_USERNAME }}
           key: ${{ secrets.ORACLE_SERVER_PRIVATE_KEY }}
-          port: 22
+          port: ${{ secrets.ORACLE_SERVER_PORT }}
           command_timeout: 20m
           script: |
             echo "** Connected to Oracle server via SSH. **"
