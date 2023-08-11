@@ -98,6 +98,7 @@ pnpm run pm2:log
 <em>Order: (Newest => Oldest)</em>
 
 - [] [] [] 
+- [] [] [] Zwift (workout & activities platform) integration.
 - [] [] [] Command that enables / disbales a discord slash command.
 - [] [] [] Command that enables / disables cron job, by name.
 - [] [] [] Command that you can set reminders with (e.g., remind me to do x in 1 hour).
@@ -203,7 +204,7 @@ pnpm run pm2:log
 
 ### Command showcase
 
-<table>
+<table align="center">
   <tr>
     <td align="center">
       <img src="./public/showcase/clubCmd_1.gif" alt="Club command showcase #1">
@@ -222,6 +223,31 @@ pnpm run pm2:log
     <td align="center">
       <img src="./public/showcase/leaderboardCmd_2.gif" alt="Leaderboard command showcase #2">
       <p>Leaderboard command showcase #2</p>
+    </td>
+  </tr>
+</table>
+
+## 🙏 Attributions
+
+<table align="center">
+  <tr>
+    <td width="33%" align="center">
+      <a href="https://www.flaticon.com/free-icons/tick" title="tick icons">
+        <img href="https://www.flaticon.com/free-icons/tick" src="./public/embed/success.png">
+        <p>Tick icons created by Roundicons - Flaticon</p>
+      </a>
+    </td>
+    <td width="33%" align="center">
+      <a href="https://www.flaticon.com/free-icons/close" title="close icons">
+        <img href="https://www.flaticon.com/free-icons/close" src="./public/embed/failure.png">
+        <p>Close icons created by Vectors Market - Flaticon</p>
+      </a>
+    </td>
+    <td width="33%" align="center">
+      <a href="https://www.flaticon.com/free-icons/question" title="question icons">
+        <img href="https://www.flaticon.com/free-icons/question" src="./public/embed/unknown.png">
+        <p>Question icons created by Roundicons - Flaticon</p>
+      </a>
     </td>
   </tr>
 </table>
