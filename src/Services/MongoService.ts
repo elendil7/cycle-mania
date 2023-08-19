@@ -1,6 +1,7 @@
 import { connect, connection, deleteModel, disconnect } from "mongoose";
 import getEnv from "../Utils/getEnv";
 import { Symbols } from "../Utils/constants";
+import { logger } from "../Logging/Winston";
 
 export default class MongoService {
   private readonly dbname: string;
@@ -14,9 +15,9 @@ export default class MongoService {
   }
 
   public async init() {
-    console.log(`${Symbols.HOURGLASS} Connecting to MongoDB..`);
+    logger.info(`${Symbols.HOURGLASS} Connecting to MongoDB..`);
     await this.connect();
-    console.log(
+    logger.info(
       `${Symbols.SUCCESS} Connected to MongoDB. [DB name: ${this.dbname}]`,
     );
   }

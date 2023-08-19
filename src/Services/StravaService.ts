@@ -11,6 +11,7 @@ import { request } from "undici";
 import { getUnixTimestamp } from "../Utils/timeConversions";
 import { puppeteerService } from "../Index";
 import RichClubActivities from "../API/Strava/v3/models/Custom/RichClubActivities";
+import { logger } from "../Logging/Winston";
 
 export default class StravaService {
   private readonly _configStrava: typeof config_STRAVA; // private field (immutable) to store the most recent config
@@ -63,21 +64,21 @@ export default class StravaService {
 
   public async init() {
     // * load strava config
-    /*     console.log(`${Symbols.HOURGLASS} Loading Strava config...`);
-    console.log(`${Symbols.SUCCESS} Loaded!`); */
-    /*     console.log(`${Symbols.HOURGLASS} Launching StravaService browser...`);
+    /*     logger.info(`${Symbols.HOURGLASS} Loading Strava config...`);
+    logger.info(`${Symbols.SUCCESS} Loaded!`); */
+    /*     logger.info(`${Symbols.HOURGLASS} Launching StravaService browser...`);
 
     // launch puppeteer browser
     this.browser = await puppeteerService.launchBrowser(this.constructor.name);
 
-    console.log(`${Symbols.SUCCESS} Launched!`); */
+    logger.info(`${Symbols.SUCCESS} Launched!`); */
   }
 
   @RefreshTokenDecorator // decorator to refresh token before calling the method
   public async attemptPing() {
     // * try pinging strava with the current access token
     try {
-      console.log(`${Symbols.HOURGLASS} Pinging strava...`);
+      logger.info(`${Symbols.HOURGLASS} Pinging strava...`);
       const response = await axios.get(`/athlete`, {
         baseURL: this.stravaConfig.url.base_URL,
         headers: {
@@ -85,14 +86,14 @@ export default class StravaService {
         },
       });
       if (response.status === 200) {
-        console.log(`${Symbols.SUCCESS} Ping successful!`);
+        logger.info(`${Symbols.SUCCESS} Ping successful!`);
       } else {
-        console.error(
+        logger.error(
           `${Symbols.FAILURE} Failed to connect to the Strava API. Check refresh token.`,
         );
       }
     } catch (e) {
-      console.error(
+      logger.error(
         `${Symbols.FAILURE} Error connecting to to the Strava API. Restart bot.`,
       );
     }
@@ -133,7 +134,7 @@ export default class StravaService {
 
       return data as Club;
     } catch (e) {
-      // console.error(e);
+      logger.error(e);
     }
   }
 
@@ -190,7 +191,7 @@ export default class StravaService {
 
       return (await body.json()).data as LeaderboardAthlete[];
     } catch (e) {
-      // console.error(e);
+      logger.error(e);
     }
   }
 
@@ -211,7 +212,7 @@ export default class StravaService {
 
       return (await body.json()) as RichClubActivities;
     } catch (e) {
-      console.error(e);
+      logger.error(e);
     }
   }
 }

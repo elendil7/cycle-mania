@@ -9,6 +9,7 @@ import {
   getTokenStorage,
   updateTokenStorage,
 } from "../../../../Mongo/data/TokenStorageRepository";
+import { logger } from "../../../../Logging/Winston";
 
 // checks if auth token is expired or not
 function isExpired(expiresAt: number): boolean {
@@ -39,13 +40,13 @@ export default async function refreshToken(count: number): Promise<number> {
 
   // if the function has been called more than 5 times, throw an error
   if (count > 5) {
-    console.error(
+    logger.error(
       `${Symbols.WARNING} Could not refresh Strava Token. Strava may be down...`,
     );
     return 503;
   }
 
-  console.log(
+  logger.info(
     `${Symbols.DUCK} Refreshing Strava Tokens (attempt #${count})...`,
   );
 
@@ -84,13 +85,13 @@ export default async function refreshToken(count: number): Promise<number> {
       // update the access token in the strava service's memory
       stravaService.accessToken = access_token;
 
-      console.log(`${Symbols.BOAR} Token Refreshed!`);
+      logger.info(`${Symbols.BOAR} Token Refreshed!`);
 
       // return success code
       return 200;
     } else {
       // if the response is not successful, log the error and try again
-      console.error(
+      logger.warn(
         `${Symbols.FAILURE} Error refreshing Strava Token. Retrying...`,
       );
       // increment the count, wait 2 seconds, then call the refreshToken function again
@@ -99,7 +100,7 @@ export default async function refreshToken(count: number): Promise<number> {
       return await refreshToken(count);
     }
   } catch (e) {
-    console.log(e);
+    logger.error(e);
     return 500;
   }
 }

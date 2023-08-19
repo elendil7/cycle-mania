@@ -6,6 +6,7 @@ import { Browser } from "puppeteer";
 import { join } from "path";
 import { Symbols } from "../Utils/constants";
 import { config_PUPPETEER } from "../../config";
+import { logger } from "../Logging/Winston";
 
 export default class PuppeteerService {
   // private field to store the most recent config
@@ -94,7 +95,7 @@ export default class PuppeteerService {
     if (this.browsers.has(serviceName) && browser) return browser;
 
     // if browser does not exist, launch a new browser
-    console.log(`${Symbols.LOADING} Trying to launch a new browser...`);
+    logger.info(`${Symbols.LOADING} Trying to launch a new browser...`);
     // start a new browser in that service name
     return await this.launchBrowser(serviceName);
   }

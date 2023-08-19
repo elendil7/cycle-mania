@@ -2,12 +2,13 @@ import { ActivityType, Events } from "discord.js";
 import DiscordBot from "../Structures/DiscordBot";
 import { LineBreak, Symbols } from "../../Utils/constants";
 import { config_DISCORDBOT } from "../../../config";
+import { logger } from "../../Logging/Winston";
 
 export default {
   name: Events.ClientReady,
   once: true,
   async run(client: DiscordBot) {
-    if (client.user == null) return console.log("Client not found.");
+    if (client.user == null) return logger.warn("Client not found.");
 
     // set client status
     client.user.setPresence({
@@ -21,7 +22,7 @@ export default {
       ],
     });
 
-    console.log(`${Symbols.CHECKMARK} Ready! Logged in as ${client.user.tag}`);
+    logger.info(`${Symbols.CHECKMARK} Ready! Logged in as ${client.user.tag}`);
     console.log(LineBreak);
   },
 };

@@ -1,3 +1,4 @@
+import { logger } from "../../Logging/Winston";
 import StravaTokenStorageModel from "../models/StravaTokenStorage";
 import { TokenStorage } from "../schemasExport";
 
@@ -12,7 +13,7 @@ export const createTokenStorage = async () => {
     // return token storage
     return tokenStorage;
   } catch (e) {
-    console.log(e);
+    logger.error(e);
   }
 };
 
@@ -20,7 +21,7 @@ export const getTokenStorage = async () => {
   try {
     return await TokenStorage.findOne();
   } catch (e) {
-    console.log(e);
+    logger.error(e);
   }
 };
 
@@ -30,6 +31,6 @@ export const updateTokenStorage = async (
   try {
     return await TokenStorage.updateOne(tokenStorage);
   } catch (e) {
-    console.log(e);
+    logger.error(e);
   }
 };

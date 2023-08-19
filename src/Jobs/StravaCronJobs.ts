@@ -14,6 +14,7 @@ import {
   updateClubActivityIDs,
 } from "../Mongo/data/ClubActivityIDsRepository";
 import StravaClubActivityIDsModel from "../Mongo/models/StravaClubActivityIDs";
+import { logger } from "../Logging/Winston";
 
 // schedule leaderboard job
 export const scheduleLeaderboardJob = new CronJob(
@@ -27,10 +28,10 @@ export const scheduleLeaderboardJob = new CronJob(
 
       // edge case handling (improper config)
       if (!channel)
-        return console.error("Invalid leaderboard channel. Check config.");
+        return logger.error("Invalid leaderboard channel. Check config.");
 
       if (channel.type !== ChannelType.GuildText)
-        return console.error(
+        return logger.warn(
           "Leaderboard channel must be a guild text channel. Check config.",
         );
 
@@ -38,7 +39,7 @@ export const scheduleLeaderboardJob = new CronJob(
       const club = await stravaService.getClub(config_STRAVA.clubID);
 
       // edge case handling (no club retrieved)
-      if (!club) return console.error("No club retrieved.");
+      if (!club) return logger.warn("No club retrieved.");
 
       // get the leaderboard from Strava
       const leaderboard = await stravaService.getClubLeaderboard(
@@ -47,14 +48,14 @@ export const scheduleLeaderboardJob = new CronJob(
       );
 
       // edge case handling (no leaderboard retrieved)
-      if (!leaderboard) return console.error("No leaderboard retrieved.");
+      if (!leaderboard) return logger.error("No leaderboard retrieved.");
 
       // send the leaderboard to the channel
       await channel.send({
         embeds: [await LeaderboardEmbed(club, leaderboard, 0)],
       });
     } catch (e) {
-      console.error(
+      logger.error(
         "An error occurred while retrieving and sending the leaderboard:",
         e,
       );
@@ -77,10 +78,10 @@ export const scheduleActivitiesJob = new CronJob(
 
       // edge case handling (improper config)
       if (!channel)
-        return console.error("Invalid activities channel. Check config.");
+        return logger.warn("Invalid activities channel. Check config.");
 
       if (channel.type !== ChannelType.GuildText)
-        return console.error(
+        return logger.warn(
           "Activities channel must be a guild text channel. Check config.",
         );
 
@@ -89,7 +90,7 @@ export const scheduleActivitiesJob = new CronJob(
         config_STRAVA.clubID,
       );
 
-      if (!activities) return console.error("No activities retrieved.");
+      if (!activities) return logger.info("No activities retrieved.");
 
       // * Ensure duplicate activities are not sent (i.e. activities that have already been sent in past cron job runs)
       // extract the ClubActivity[] array from the response. Index 0 = most recent activity, index 19 (20th) = oldest activity
@@ -126,7 +127,7 @@ export const scheduleActivitiesJob = new CronJob(
         });
       }
     } catch (error) {
-      console.error(
+      logger.error(
         "An error occurred while retrieving and sending activities:",
         error,
       );

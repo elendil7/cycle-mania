@@ -21,6 +21,7 @@ let logger: Logger;
   });
 
   const consoleProd = new Console({
+    level: "info",
     format: format.combine(
       format.timestamp(),
       format.printf(
@@ -40,6 +41,7 @@ let logger: Logger;
   });
 
   const consoleDev = new Console({
+    level: "info",
     format: format.combine(
       format.colorize(),
       format.timestamp(),
@@ -63,20 +65,40 @@ let logger: Logger;
     ),
   );
 
+  // combined log for level info and higher
+  const fileCombinedGlobal = new File({
+    level: "info",
+    filename: `${logPath}/[0]_[🔀📃]_combined.log`,
+    format: globalFormat,
+  });
+
   const fileErrGlobal = new File({
-    filename: `${logPath}/error.log`,
+    filename: `${logPath}/[1]_[❗️🚫]_error.log`,
     level: "error",
     format: globalFormat,
   });
 
+  const fileWarnGlobal = new File({
+    filename: `${logPath}/[2]_[⚠️🔶]_warn.log`,
+    level: "warn",
+    format: globalFormat,
+  });
+
   const fileInfoGlobal = new File({
-    filename: `${logPath}/info.log`,
+    filename: `${logPath}/[3]_[ℹ️📋]_info.log`,
     level: "info",
     format: globalFormat,
   });
 
-  const fileCombinedGlobal = new File({
-    filename: `${logPath}/combined.log`,
+  const fileDebugGlobal = new File({
+    filename: `${logPath}/[4]_[🐞🔍]_debug.log`,
+    level: "debug",
+    format: globalFormat,
+  });
+
+  const fileSillyGlobal = new File({
+    filename: `${logPath}/[5]_[🤪🎉]_silly.log`,
+    level: "silly",
     format: globalFormat,
   });
 
@@ -86,9 +108,10 @@ let logger: Logger;
       transports: [
         consoleProd,
         discordTransportProd,
-        fileErrGlobal,
-        fileInfoGlobal,
         fileCombinedGlobal,
+        fileErrGlobal,
+        fileWarnGlobal,
+        fileInfoGlobal,
       ],
     });
   }
@@ -98,9 +121,12 @@ let logger: Logger;
       transports: [
         consoleDev,
         // discordTransportDev,
-        fileErrGlobal,
-        fileInfoGlobal,
         fileCombinedGlobal,
+        fileErrGlobal,
+        fileWarnGlobal,
+        fileInfoGlobal,
+        fileDebugGlobal,
+        fileSillyGlobal,
       ],
     });
   }

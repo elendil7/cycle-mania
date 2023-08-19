@@ -9,6 +9,7 @@ import ICommandCategoriesCollection from "../Types/ICommandCategoriesCollection"
 import ICommandsCollection from "../Types/ICommandsCollection";
 import getEnv from "../../Utils/getEnv";
 import { Symbols } from "../../Utils/constants";
+import { logger } from "../../Logging/Winston";
 
 export default class DiscordBot extends Client {
   private readonly config: any;
@@ -49,12 +50,12 @@ export default class DiscordBot extends Client {
 
   public async start() {
     try {
-      console.log(`${Symbols.HOURGLASS} Logging in to Discord...`);
+      logger.info(`${Symbols.HOURGLASS} Logging in to Discord...`);
       // login to Discord using bot token
       await super.login(getEnv("DISCORD_BOT_TOKEN"));
-      console.log(`${Symbols.SUCCESS} Logged in to Discord.`);
+      logger.info(`${Symbols.SUCCESS} Logged in to Discord.`);
     } catch (e) {
-      console.log(e);
+      logger.error(e);
     }
   }
 
@@ -70,7 +71,7 @@ export default class DiscordBot extends Client {
 
   // methods
   public async loadCommands(): Promise<void> {
-    console.log(`${Symbols.HOURGLASS} Loading commands...`);
+    logger.info(`${Symbols.HOURGLASS} Loading commands...`);
 
     try {
       // get Command folder path
@@ -146,25 +147,25 @@ export default class DiscordBot extends Client {
         this.commandCategories.set(commandCategoryName, commandNames);
       }
 
-      console.log(`${Symbols.SUCCESS} Commands loaded.`);
+      logger.info(`${Symbols.SUCCESS} Commands loaded.`);
     } catch (e) {
-      console.log(e);
+      logger.error(e);
     }
   }
 
   public async registerCommands(): Promise<void> {
     try {
       // log all commands
-      // console.log(this.commands);
+      logger.debug(JSON.stringify(this.commands));
 
       await registerSlashCommands(this.commands);
     } catch (e) {
-      console.log(e);
+      logger.error(e);
     }
   }
 
   public async loadEvents() {
-    console.log(`${Symbols.HOURGLASS} Loading events...`);
+    logger.info(`${Symbols.HOURGLASS} Loading events...`);
 
     try {
       const path = resolve(__dirname, "..", "Events");
@@ -197,15 +198,15 @@ export default class DiscordBot extends Client {
           this.events.set(eventName, curEvent);
         }
         // log all events
-        // console.log(this.events);
+        logger.debug(JSON.stringify(this.events));
 
-        console.log(`${Symbols.SUCCESS} Events loaded.`);
+        logger.info(`${Symbols.SUCCESS} Events loaded.`);
       } else {
         // if no events were fetched, send error message
-        console.log(`${Symbols.ERROR} No events found. Debug it.`);
+        logger.error(`${Symbols.ERROR} No events found. Debug it.`);
       }
     } catch (e) {
-      console.log(e);
+      logger.error(e);
     }
   }
 }

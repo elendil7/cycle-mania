@@ -9,6 +9,8 @@ import DiscordService from "./Services/DiscordService";
 import { LineBreak, Symbols } from "./Utils/constants";
 import MongoService from "./Services/MongoService";
 import CronJobService from "./Services/CronJobService";
+import { logger } from "./Logging/Winston";
+
 // variables
 let cronJobService: CronJobService;
 let mongoService: MongoService;
@@ -18,31 +20,31 @@ let discordService: DiscordService;
 
 function startServices() {
   console.log(LineBreak);
-  console.log(
+  logger.info(
     `\x1b[1m<<< ${Symbols.INFORMATION} Starting services... >>>\x1b[0m`,
   );
   console.log(LineBreak);
 
   // * Start each Service, sequentially
   mongoService = new MongoService();
-  console.log(`${Symbols.SUCCESS} Started MongoService.`);
+  logger.info(`${Symbols.SUCCESS} Started MongoService.`);
   cronJobService = new CronJobService();
-  console.log(`${Symbols.SUCCESS} Started CronJobService.`);
+  logger.info(`${Symbols.SUCCESS} Started CronJobService.`);
   puppeteerService = new PuppeteerService();
-  console.log(`${Symbols.SUCCESS} Started PuppeteerService.`);
+  logger.info(`${Symbols.SUCCESS} Started PuppeteerService.`);
   stravaService = new StravaService();
-  console.log(`${Symbols.SUCCESS} Started StravaService.`);
+  logger.info(`${Symbols.SUCCESS} Started StravaService.`);
   discordService = new DiscordService();
-  console.log(`${Symbols.SUCCESS} Started DiscordService.`);
+  logger.info(`${Symbols.SUCCESS} Started DiscordService.`);
 
-  console.log(LineBreak);
+  logger.debug(LineBreak);
 }
 
 async function initializeServices() {
-  console.log(
+  logger.info(
     `\x1b[1m<<< ${Symbols.INFORMATION} Initializing services... >>>\x1b[0m`,
   );
-  console.log(LineBreak);
+  logger.debug(LineBreak);
 
   // * MongoService
   await mongoService.init(); // initialize the service (connect to DB)

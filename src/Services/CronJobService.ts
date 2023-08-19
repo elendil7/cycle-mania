@@ -8,6 +8,7 @@ import {
   scheduleLeaderboardJob,
 } from "../Jobs/StravaCronJobs";
 import { Symbols } from "../Utils/constants";
+import { logger } from "../Logging/Winston";
 
 export default class CronJobService {
   private _jobs: Map<string, CronJob>;
@@ -26,13 +27,13 @@ export default class CronJobService {
   }
 
   public async init() {
-    console.log(`${Symbols.HOURGLASS} Importing cronjobs...`);
+    logger.info(`${Symbols.HOURGLASS} Importing cronjobs...`);
     await this.importJobs();
-    console.log(`${Symbols.SUCCESS} Imported cronjobs.`);
+    logger.info(`${Symbols.SUCCESS} Imported cronjobs.`);
 
-    console.log(`${Symbols.HOURGLASS} Starting all cronjobs...`);
+    logger.info(`${Symbols.HOURGLASS} Starting all cronjobs...`);
     await this.startAll();
-    console.log(`${Symbols.SUCCESS} All cronjobs started.`);
+    logger.info(`${Symbols.SUCCESS} All cronjobs started.`);
   }
 
   public async importJobs() {
@@ -48,7 +49,7 @@ export default class CronJobService {
       return file === `${fileName}.js` || file === `${fileName}.ts`;
     });
 
-    // console.log(jobFiles);
+    logger.debug(JSON.stringify(jobFiles));
 
     // iterate through each file
     for (let jobFile of jobFiles) {

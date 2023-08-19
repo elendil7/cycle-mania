@@ -1,5 +1,5 @@
 // Require the necessary discord.js classes
-import { GatewayIntentBits } from "discord.js";
+import { AllowedMentionsTypes, GatewayIntentBits } from "discord.js";
 import DiscordBot from "../Discord/Structures/DiscordBot";
 
 export default class DiscordService {

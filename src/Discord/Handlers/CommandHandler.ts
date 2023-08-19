@@ -5,6 +5,7 @@ import {
   CriticalBugEmbed,
   YouAreOnCooldownEmbed,
 } from "../Embeds/Reusable/ErrorEmbeds";
+import { logger } from "../../Logging/Winston";
 
 export default async function CommandHandler(
   client: DiscordBot,
@@ -45,7 +46,7 @@ export default async function CommandHandler(
     await command.execute(client, interaction);
   } catch (error) {
     // if there's an error, log it
-    console.error(error);
+    logger.error(error);
     if (interaction.replied || interaction.deferred) {
       await interaction.followUp({
         embeds: [CriticalBugEmbed()],

@@ -4,6 +4,7 @@ import { Symbols } from "../../Utils/constants";
 import getEnv from "../../Utils/getEnv";
 import { config_DISCORDBOT } from "../../../config";
 import { pluralize } from "../../Utils/pluralize";
+import { logger } from "../../Logging/Winston";
 
 export default async function registerSlashCommands(
   commands: Collection<string, Command>,
@@ -15,7 +16,7 @@ export default async function registerSlashCommands(
     if (cmd.data) {
       commandsInJSON.push(cmd.data.toJSON());
     } else {
-      console.log(
+      logger.info(
         `${Symbols.WARNING} [WARNING] The command at ${cmdName} is missing a required "data" or "execute" property.`,
       );
     }
@@ -35,7 +36,7 @@ export default async function registerSlashCommands(
   try {
     // * if in production, deploy slash commands globally
     if (getEnv("PROD") === "true") {
-      console.log(
+      logger.info(
         `${Symbols.HOURGLASS} Started refreshing ${totalCommands} application (/) ${ocdTotalCommands} globally.`,
       );
 
@@ -43,7 +44,7 @@ export default async function registerSlashCommands(
         body: commandsInJSON,
       });
 
-      console.log(
+      logger.info(
         `${Symbols.SUCCESS} Successfully reloaded ${totalCommands} application (/) ${ocdTotalCommands} globally.`,
       );
 
@@ -59,13 +60,13 @@ export default async function registerSlashCommands(
             },
           );
         } catch (e) {
-          console.error(e);
+          logger.error(e);
         }
       } */
     }
     // * otherwise (if in dev), deploy slash commands to each guild
     else {
-      console.log(
+      logger.info(
         `${Symbols.HOURGLASS} Started refreshing ${totalCommands} application (/) ${ocdTotalCommands} in ${totalGuilds} ${ocdTotalGuilds}.`,
       );
 
@@ -81,11 +82,11 @@ export default async function registerSlashCommands(
             },
           );
         } catch (e) {
-          console.log(e);
+          logger.info(e);
         }
       }
 
-      console.log(
+      logger.info(
         `${Symbols.SUCCESS} Successfully reloaded ${totalCommands} application (/) ${ocdTotalCommands} in ${totalGuilds} ${ocdTotalGuilds}.`,
       );
 
@@ -96,6 +97,6 @@ export default async function registerSlashCommands(
     }
   } catch (error) {
     // And of course, make sure you catch and log any errors!
-    console.error(error);
+    logger.error(error);
   }
 }
