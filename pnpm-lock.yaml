@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@types/logform':
+    specifier: ^1.10.1
+    version: 1.10.1
   '@types/luxon':
     specifier: ^3.3.1
     version: 3.3.1
@@ -447,6 +450,13 @@ packages:
 
   /@types/har-format@1.2.11:
     resolution: {integrity: sha512-T232/TneofqK30AD1LRrrf8KnjLvzrjWDp7eWST5KoiSzrBfRsLrWDPk4STQPW4NZG6v2MltnduBVmakbZOBIQ==}
+    dev: false
+
+  /@types/logform@1.10.1:
+    resolution: {integrity: sha512-7PFeU3gNsaG80dNWIl9FafSCnc4oYRXlyJ4yM38i0hMuqJaIMGSARS16QKTKfN4nZmNkA2Yy1z3h1WkJxgGbmA==}
+    deprecated: This is a stub types definition. logform provides its own type definitions, so you do not need this installed.
+    dependencies:
+      logform: 2.5.1
     dev: false
 
   /@types/luxon@3.3.1:
@@ -1673,6 +1683,7 @@ packages:
 
   /memory-pager@1.5.0:
     resolution: {integrity: sha512-ZS4Bp4r/Zoeq6+NLJpP+0Zzm0pR8whtGPf1XExKLJBAczGMnSi3It14OiNCStjQjM6NU1okjQGSxgEZN8eBYKg==}
+    requiresBuild: true
     dev: false
     optional: true
 
@@ -2586,6 +2597,7 @@ packages:
 
   /sparse-bitfield@3.0.3:
     resolution: {integrity: sha512-kvzhi7vqKTfkh0PZU+2D2PIllw2ymqJKujUcyPMd9Y75Nv4nPbGJZXNhxsgdQab2BmlDct1YnfQCguEvHr7VsQ==}
+    requiresBuild: true
     dependencies:
       memory-pager: 1.5.0
     dev: false

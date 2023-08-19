@@ -26,6 +26,7 @@
     "ts-node": "^10.9.1"
   },
   "dependencies": {
+    "@types/logform": "^1.10.1",
     "@types/luxon": "^3.3.1",
     "@types/node": "^20.4.4",
     "axios": "^1.4.0",
