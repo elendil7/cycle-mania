@@ -76,4 +76,9 @@ export const config_MISC = {
       issues: "https://github.com/elendil7/Cycle-Mania/issues/new",
     },
   },
+  path: {
+    logs: {
+      winston: resolve(__dirname, "./system/logs/winston"),
+    },
+  },
 };
