@@ -15,7 +15,7 @@ on:
       - .dockerignore
       - .github/workflows/**
       - tsconfig.json
-      
+
 jobs:
   redeploy:
     # Run on Ubuntu (Oracle server is Ubuntu / Linux)
@@ -61,6 +61,7 @@ jobs:
             echo "DISCORD_BOT_TOKEN=${{ secrets.DISCORD_BOT_TOKEN }}" >> .env
             echo "DISCORD_CHANNEL_ACTIVITIES_ID=${{ secrets.DISCORD_CHANNEL_ACTIVITIES_ID }}" >> .env
             echo "DISCORD_CHANNEL_LEADERBOARD_ID=${{ secrets.DISCORD_CHANNEL_LEADERBOARD_ID }}" >> .env
+            echo "DISCORD_WEBHOOK_LOG"=${{ secrets.DISCORD_WEBHOOK_LOG }} >> .env
             echo "MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }}" >> .env
             echo "MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}" >> .env
             echo "MONGO_USERNAME=${{ secrets.MONGO_USERNAME }}" >> .env
