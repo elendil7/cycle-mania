@@ -1,4 +1,4 @@
-# Set base image
+# Set base image from Docker Hub
 FROM node:18.17.1-alpine
 
 # Set environment variables
