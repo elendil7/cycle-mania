@@ -1,11 +1,13 @@
-name: Redeploy to Oracle on Push to Main
+name: Redeploy to Oracle on PR merge to main
 
-# On push to main branch of repository...
+# On PR merge to main branch of repository...
 on:
-  push:
+  pull_request:
     branches:
       - main
-    # Only run workflow if changes are detected in specified paths / files
+    types:
+      [closed]
+      # Only run workflow if changes are detected in specified paths / files
     paths:
       - src/**
       - package.json
