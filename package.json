@@ -29,7 +29,7 @@
     "@types/logform": "^1.10.1",
     "@types/luxon": "^3.3.1",
     "@types/node": "^20.4.4",
-    "axios": "^1.4.0",
+    "axios": "^1.6.0",
     "cron": "^2.4.0",
     "discord.js": "^14.11.0",
     "dotenv": "^16.3.1",
